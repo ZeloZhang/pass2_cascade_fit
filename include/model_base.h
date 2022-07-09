@@ -58,15 +58,15 @@ namespace NuFit
 			void get_par_names(std::vector<std::string> &names);
 			void get_histograms(std::string outfile, std::map<std::string, double> &pars);
 			std::vector<TH3D*> get_hist_mcsum(std::map<std::string, double> &pars); // returns pointer to mcsum histogram - relevant for toyMC class
-	                unsigned int get_npars_base() const;
-	                unsigned int get_npars() const;
+	        unsigned int get_npars_base() const;
+	        unsigned int get_npars() const;
 			std::vector<std::string> get_analysis_names();	
 
 			void set_hist(const std::string &analysis, TH3D *hist);
 			void cache_data_hists(); // before data hists are overwritten with toy hists. allow to cache them
-                        void restore_data_hists(); // after toy data fits, replace toy data with cached real exp data.
+            void restore_data_hists(); // after toy data fits, replace toy data with cached real exp data.
 
-                        virtual void update_auxillary_data(std::map<std::string, double> &point); // only meaningful is priors are specified
+            virtual void update_auxillary_data(std::map<std::string, double> &point); // only meaningful is priors are specified
 			virtual void reset_auxillary_data(); // more relevant for systematics
 	
 		protected:
@@ -77,9 +77,9 @@ namespace NuFit
 			std::map<std::string, unsigned int> parameters; // ... and ordering	
 
 			std::vector<TH3D*> hist_ptrs; // convenience
-	                unsigned int npars_base;
+	        unsigned int npars_base;
 			unsigned int npars_astro;
-	                unsigned int npars; // npars_base + npars_astro (depends on astro model)
+	        unsigned int npars; // npars_base + npars_astro (depends on astro model)
 	
 			unsigned int ndatasets; // keep track of number of analyses added
 
@@ -96,7 +96,7 @@ namespace NuFit
 			std::unordered_map<int, double> log_factorials;
 			void cache_logfactorials();
 			double stirling_constant;
-                        double gaussian_prior_penalty(const double &x, const double &mean, const double &sigma);
+            double gaussian_prior_penalty(const double &x, const double &mean, const double &sigma);
 			double bivariate_prior_penalty(const double &abs, const double &scat, const double &mean_abs, const double &mean_scat);
 
 			// default values for priors
@@ -105,6 +105,7 @@ namespace NuFit
 		private:
 			void update_astro(const double *astro_pars);
 			void update_atmospherics(const double *pars);
+            void update_sigmasq(const double *astro_pars, const double *pars);
 			
 	};
 

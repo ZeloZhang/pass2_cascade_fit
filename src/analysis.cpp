@@ -18,8 +18,8 @@ void NuFit::analysis::create()
 
     // define cascade signal sample
     std::vector<double> binsx; // logE
-    //for (unsigned int i=2; i<23; ++i)    
-    for (unsigned int i=7; i<23; ++i)    
+    for (unsigned int i=0; i<23; ++i)    
+    //for (unsigned int i=7; i<23; ++i)    
     //for (unsigned int i=2; i<12; ++i)    
         binsx.push_back(2.6 + 0.2 * i);
 
@@ -28,8 +28,8 @@ void NuFit::analysis::create()
     //    binsy.push_back(-1.0+0.2*i);
     binsy.push_back(-1);
     binsy.push_back(0.2);
-    //binsy.push_back(0.6);
-    //binsy.push_back(1);
+    binsy.push_back(0.6);
+    binsy.push_back(1);
 
     std::vector<double> binsz; // ra (1 bin)
     binsz.push_back(-10.);
@@ -102,8 +102,8 @@ void NuFit::analysis::create()
     std::vector<NuFit::hists> analyses;
     analyses.push_back(analysis1);
     //analyses.push_back(analysis11);
-    analyses.push_back(analysis2);
-    analyses.push_back(analysis3);
+    //analyses.push_back(analysis2);
+    //analyses.push_back(analysis3);
 
     // create astro model. then create base model
     NuFit::astro_model_single_plaw *astro = new astro_model_single_plaw();

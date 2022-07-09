@@ -5,12 +5,13 @@ NuFit::hists::hists(std::string name, std::vector<double> userbins_x, std::vecto
 	  atm_prompt((name+std::string("_all_prompt")).c_str(), (name+std::string("_all_prompt")).c_str(), userbins_x.size()-1, &(userbins_x[0]), userbins_y.size()-1, &(userbins_y[0]), userbins_z.size()-1, &(userbins_z[0])), 
 	  astro((name+std::string("_all_astro")).c_str(), (name+std::string("_all_astro")).c_str(), userbins_x.size()-1, &(userbins_x[0]), userbins_y.size()-1, &(userbins_y[0]), userbins_z.size()-1, &(userbins_z[0])),
 	  mcsum((name+std::string("_mcsum")).c_str(), (name+std::string("_mcsum")).c_str(), userbins_x.size()-1, &(userbins_x[0]), userbins_y.size()-1, &(userbins_y[0]), userbins_z.size()-1, &(userbins_z[0])), 
+	  sigmasq((name+std::string("_sigmasq")).c_str(), (name+std::string("_sigmasq")).c_str(), userbins_x.size()-1, &(userbins_x[0]), userbins_y.size()-1, &(userbins_y[0]), userbins_z.size()-1, &(userbins_z[0])), 
 	 
 
 	  nue((name+std::string("_nue")), userbins_x, userbins_y, userbins_z),
 	  numu((name+std::string("_numu")), userbins_x, userbins_y, userbins_z),
 	  nutau((name+std::string("_nutau")), userbins_x, userbins_y, userbins_z),
-          muon((name+std::string("_muon")), userbins_x, userbins_y, userbins_z), 
+      muon((name+std::string("_muon")), userbins_x, userbins_y, userbins_z), 
 	  data((name+std::string("_data")), userbins_x, userbins_y, userbins_z)
            
 { 
@@ -91,17 +92,16 @@ void NuFit::hists::read(std::string f_nue, std::string f_numu, std::string f_nut
 	}
 
 	// numu
-        for (unsigned int i=0; i<numu.get_size(); ++i) {
-                numu.conv.Fill(numu.logenergy_rec[i], numu.coszenith_rec[i], numu.ra_rec[i], numu.conv_weight[i]);
-                numu.prompt.Fill(numu.logenergy_rec[i], numu.coszenith_rec[i], numu.ra_rec[i], numu.prompt_weight[i]);
+    for (unsigned int i=0; i<numu.get_size(); ++i) {
+        numu.conv.Fill(numu.logenergy_rec[i], numu.coszenith_rec[i], numu.ra_rec[i], numu.conv_weight[i]);
+        numu.prompt.Fill(numu.logenergy_rec[i], numu.coszenith_rec[i], numu.ra_rec[i], numu.prompt_weight[i]);
 	}
 
 	// nutau
-        for (unsigned int i=0; i<nutau.get_size(); ++i) 
-                nutau.prompt.Fill(nutau.logenergy_rec[i], nutau.coszenith_rec[i], nutau.ra_rec[i], nutau.prompt_weight[i]);
+    for (unsigned int i=0; i<nutau.get_size(); ++i) {
+        nutau.prompt.Fill(nutau.logenergy_rec[i], nutau.coszenith_rec[i], nutau.ra_rec[i], nutau.prompt_weight[i]);
+    }
 	
-
-
 
 	// add nue, numu, nutau histograms
 	
@@ -124,16 +124,18 @@ void NuFit::hists::read(std::string f_nue, std::string f_numu, std::string f_nut
 	
 
 	// muon
-        for (unsigned int i=0; i<muon.get_size(); ++i)
+    for (unsigned int i=0; i<muon.get_size(); ++i){
 		muon.hist.Fill(muon.logenergy_rec[i], muon.coszenith_rec[i], muon.ra_rec[i], muon.muon_weight[i]);
+    }
 
 	// copy the histogram
 	muon.hist_orig = *((TH3D*) muon.hist.Clone());
 	
 
 	// data
-        for (unsigned int i=0; i<data.get_size(); ++i)
+    for (unsigned int i=0; i<data.get_size(); ++i){
 		data.hist.Fill(data.logenergy_rec[i], data.coszenith_rec[i], data.ra_rec[i]);
+    }
 
 
 	std::cout << "... done" << std::endl;

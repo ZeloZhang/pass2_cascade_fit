@@ -54,7 +54,7 @@ void NuFit::model_base::store_parameters()
         ndatasets = input.size();
 
         // keep pointers to all available histograms in this analysis
-	hist_ptrs.clear();
+	    hist_ptrs.clear();
         for (unsigned int i=0; i<ndatasets; ++i) {
 
                 hists &dataset = input[i];
@@ -73,6 +73,11 @@ void NuFit::model_base::store_parameters()
                 hist_ptrs.push_back(&dataset.atm_prompt);
                 hist_ptrs.push_back(&dataset.data.hist);
                 hist_ptrs.push_back(&dataset.mcsum);
+                hist_ptrs.push_back(&dataset.sigmasq);
+                hist_ptrs.push_back(&dataset.nue.sigmasq);
+                hist_ptrs.push_back(&dataset.numu.sigmasq);
+                hist_ptrs.push_back(&dataset.nutau.sigmasq);
+                hist_ptrs.push_back(&dataset.muon.sigmasq);
 
 		input_indices.insert(std::pair<std::string, unsigned int>(dataset.name, i));
         }
@@ -308,6 +313,7 @@ void NuFit::model_base::update_hists(const double *pars)
 	update_astro(astro_pars);
 	update_atmospherics(pars);	
 	update_sum();
+	update_sigmasq(astro_pars,pars);
 
 }
 
@@ -353,8 +359,8 @@ void NuFit::model_base::update_sum()
 
 		dataset.astro.Reset();
 		dataset.astro.Add(&dataset.nue.astro);
-        	dataset.astro.Add(&dataset.numu.astro);
-        	dataset.astro.Add(&dataset.nutau.astro);
+        dataset.astro.Add(&dataset.numu.astro);
+        dataset.astro.Add(&dataset.nutau.astro);
 
 		dataset.mcsum.Reset();
 		dataset.mcsum.Add(&dataset.astro);
@@ -362,6 +368,70 @@ void NuFit::model_base::update_sum()
 		dataset.mcsum.Add(&dataset.atm_prompt);
 		dataset.mcsum.Add(&dataset.muon.hist);
 	}
+	return;
+}
+
+void NuFit::model_base::update_sigmasq(const double *astro_pars, const double *pars)
+{
+	// adjust histograms according to parameter values
+	// this needs to be performed on each dataset that enters the likelihood
+	for (unsigned int i=0; i<ndatasets; ++i) {
+		
+        double w;
+        double w_astro;
+        double w_conv;
+        double w_prompt;
+		hists &dataset = input[i];
+
+		// first reset all histograms 
+		dataset.nue.sigmasq.Reset();
+		dataset.numu.sigmasq.Reset();
+		dataset.nutau.sigmasq.Reset();	
+        dataset.muon.sigmasq.Reset();
+
+		// adjust sigmasq histograms
+
+        // muon 
+
+		for (unsigned int j=0; j<dataset.muon.get_size(); ++j){ 
+            w = dataset.muon.muon_weight[j]*pars[0];
+            dataset.muon.sigmasq.Fill(dataset.muon.logenergy_rec[j], dataset.muon.coszenith_rec[j], dataset.muon.ra_rec[j], w*w);
+        }
+
+		// nue 
+		for (unsigned int j=0; j<dataset.nue.get_size(); ++j){ 
+            w_astro = dataset.nue.astro_weight[j]*astro_model->get_flux(astro_pars, dataset.nue.energy_prim[j], dataset.nue.coszenith_prim[j], dataset.nue.ra_prim[j], dataset.nue.ptype[j]);
+            w_conv = dataset.nue.conv_weight[j]*pars[1];
+            w_prompt = dataset.nue.prompt_weight[j]*pars[2];
+            w = w_astro + w_conv + w_prompt;
+			dataset.nue.sigmasq.Fill(dataset.nue.logenergy_rec[j], dataset.nue.coszenith_rec[j], dataset.nue.ra_rec[j], w*w);
+        }
+		
+		// numu
+		for (unsigned int j=0; j<dataset.numu.get_size(); ++j){
+            w_astro = dataset.numu.astro_weight[j]*astro_model->get_flux(astro_pars, dataset.numu.energy_prim[j], dataset.numu.coszenith_prim[j], dataset.numu.ra_prim[j], dataset.numu.ptype[j]);
+            w_conv = dataset.numu.conv_weight[j]*pars[1];
+            w_prompt = dataset.numu.prompt_weight[j]*pars[2];
+            w = w_astro + w_conv + w_prompt;
+			dataset.numu.sigmasq.Fill(dataset.numu.logenergy_rec[j], dataset.numu.coszenith_rec[j], dataset.numu.ra_rec[j], w*w);
+        }
+
+		// nutau
+		for (unsigned int j=0; j<dataset.nutau.get_size(); ++j){
+            w_astro = dataset.nutau.astro_weight[j]*astro_model->get_flux(astro_pars, dataset.nutau.energy_prim[j], dataset.nutau.coszenith_prim[j], dataset.nutau.ra_prim[j], dataset.nutau.ptype[j]);
+            w_conv = dataset.nutau.conv_weight[j]*pars[1];
+            w_prompt = dataset.nutau.prompt_weight[j]*pars[2];
+            w = w_astro + w_conv + w_prompt;
+			dataset.nutau.sigmasq.Fill(dataset.nutau.logenergy_rec[j], dataset.nutau.coszenith_rec[j], dataset.nutau.ra_rec[j], w*w);
+        }
+		dataset.sigmasq.Reset();
+		dataset.sigmasq.Add(&dataset.nue.sigmasq);
+		dataset.sigmasq.Add(&dataset.numu.sigmasq);
+		dataset.sigmasq.Add(&dataset.nutau.sigmasq);
+		dataset.sigmasq.Add(&dataset.muon.sigmasq);
+
+	}
+	
 	return;
 }
 

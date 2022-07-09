@@ -45,9 +45,9 @@ namespace NuFit
 			double get_likelihood_gof(const double *pars); // includes factor of 2 for wilk's	
 			double get_likelihood_abs(const double *pars); // includes factor of 2 for wilk's
 			double get_lnprob(boost::python::numeric::array pars); // positive logllh to be used from python	
-		        void get_par_names(std::vector<std::string> &names);	
+		    void get_par_names(std::vector<std::string> &names);	
 			void get_par_names(std::map<std::string, unsigned int> &names);	
-                        unsigned int get_npars();
+            unsigned int get_npars();
 			unsigned int get_n_llh_evals();
 			void reset_n_llh_evals();
 			std::vector<std::string> get_analysis_names();

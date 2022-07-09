@@ -1,7 +1,8 @@
 #include "../include/muon_input.h"
 
 NuFit::muon_input::muon_input(std::string name, std::vector<double> &bins_x, std::vector<double> &bins_y, std::vector<double> &bins_z)
-	: hist((name+std::string("")).c_str(), (name+std::string("")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])) { }
+	: hist((name+std::string("")).c_str(), (name+std::string("")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
+    sigmasq((name+std::string("_sigmasq")).c_str(), (name+std::string("_sigmasq")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])) { }
 	 
 	
 
@@ -31,13 +32,13 @@ void NuFit::muon_input::read(std::string &infile)
                                 exit(1);
                          }
 
-		         run.push_back((unsigned int) value[0]);
+		     run.push_back((unsigned int) value[0]);
 			 event.push_back((unsigned int) value[1]);
 			 energy_prim.push_back(value[2]);
 			 coszenith_prim.push_back(value[3]);
 			 ra_prim.push_back(value[4]);
 			 logenergy_rec.push_back(value[5]);
-		         coszenith_rec.push_back(value[6]);
+		     coszenith_rec.push_back(value[6]);
 			 ra_rec.push_back(value[7]);
 			 muon_weight.push_back(value[8]);	
 		 }

@@ -32,15 +32,13 @@ namespace NuFit
 		        hists(std::string name, std::vector<double> userbins_x, std::vector<double> userbins_y, std::vector<double> userbins_z);
 	
 			// these histograms go into the LLH template fit
-			
 			TH3D atm_conv;
 			TH3D atm_conv_orig;
 			TH3D atm_prompt;
 			TH3D atm_prompt_orig;
 			TH3D astro;
 			TH3D mcsum;
-	
-	
+			TH3D sigmasq;
 	
 			// these classes hold histograms per flavor. they also hold the data that has been read from file
 			NuFit::neutrino_input nue;

@@ -33,6 +33,7 @@ namespace NuFit
 			TH3D conv; // histogram of observables. changes during fitting.
 			TH3D prompt; // histogram of observables. changes during fitting.
 			TH3D astro; // histogram of observables. changes during fitting.
+			TH3D sigmasq; // histogram of observables. changes during fitting.
 	
 			std::vector<unsigned int> run;
 			std::vector<unsigned int> event;

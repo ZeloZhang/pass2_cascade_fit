@@ -3,7 +3,8 @@
 NuFit::neutrino_input::neutrino_input(std::string name, std::vector<double> &bins_x, std::vector<double> &bins_y, std::vector<double> &bins_z)
 	: conv((name+std::string("_conv")).c_str(), (name+std::string("_conv")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
 	  prompt((name+std::string("_prompt")).c_str(), (name+std::string("_prompt")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
-	  astro((name+std::string("_astro")).c_str(), (name+std::string("_astro")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])) 
+	  astro((name+std::string("_astro")).c_str(), (name+std::string("_astro")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])), 
+	  sigmasq((name+std::string("_sigmasq")).c_str(), (name+std::string("_sigmasq")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])) 
 { 
         binsx = bins_x;
         nbinsx = bins_x.size()-1;
