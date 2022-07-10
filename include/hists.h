@@ -38,9 +38,9 @@ namespace NuFit
 			TH3D atm_prompt_orig;
 			TH3D astro;
 			TH3D mcsum;
-			TH3D neglogl;
 			TH3D sigmasq;
 			TH3D gof;
+			TH3D neglogl;
 	
 			// these classes hold histograms per flavor. they also hold the data that has been read from file
 			NuFit::neutrino_input nue;
