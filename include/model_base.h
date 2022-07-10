@@ -51,6 +51,13 @@ namespace NuFit
 			double likelihood_abs(const double *pars);
 			double likelihood_abs(double neglogl);
 			double log_factorial(int value);
+
+			virtual double likelihood_say(const double *pars); // returns negative logllh
+			double likelihood_gof_say(const double *pars); 
+			double likelihood_gof_say(double neglogl);
+			double likelihood_abs_say(const double *pars);
+			double likelihood_abs_say(double neglogl);
+
 			void change_astro_model(NuFit::astro_model_base *astro);	
 		
 			// stuff below should not be necessary	

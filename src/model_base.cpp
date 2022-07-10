@@ -151,13 +151,145 @@ void NuFit::model_base::change_astro_model(NuFit::astro_model_base *astro)
 }
 
 
+double NuFit::model_base::likelihood_say(const double *pars){
+	// calculates a joint say-likelihood over all bins
+
+    double neglogl=0.0;
+	// set all histogram to current parameters
+	update_hists(pars);
+
+	// need to loop over all eventselections and all bins
+	for (unsigned int i=0; i<ndatasets; ++i) {
+		hists &dataset = input[i];
+
+		double observed = 0.0;
+		double expected = 0.0;
+        double sigmasq = 0.0;
+        double alpha = 0.0;
+        double beta = 0.0;
+        double likelihood = 0;
+		for (unsigned int k=0; k<dataset.get_nbinsx(); ++k) {
+			for (unsigned int l=0; l<dataset.get_nbinsy(); ++l) {
+				for (unsigned int m=0; m<dataset.get_nbinsz(); ++m) {
+					
+					// ROOT convention: bin indices run from 1 to N
+					expected = dataset.mcsum.GetBinContent(k+1, l+1, m+1);
+					observed = dataset.data.hist.GetBinContent(k+1, l+1, m+1);
+                    sigmasq = dataset.sigmasq.GetBinContent(k+1, l+1, m+1);
+					if (expected<1.e-20) // assume bin contents to be non-zero
+						expected = 1.e-20 ;
+
+                    alpha = expected*expected/sigmasq+1;
+                    beta = expected/sigmasq;
+                    likelihood = alpha*TMath::Log(beta)-((observed+alpha)*TMath::Log(1+beta));
+
+					neglogl -= (likelihood+TMath::LnGamma(alpha+observed)-TMath::LnGamma(alpha));
+                    /*
+                    std::cout<<"expected"<<" "<<"observed"<<" "<<"sigmasq"<<std::endl;
+                    std::cout<<expected<<" "<<observed<<" "<<sigmasq<<std::endl;
+                    std::cout<<"alpha"<<" "<<"beta"<<" "<<"neglogl"<<" "<<"lg1 lg2"<<std::endl;
+                    std::cout<<alpha<<" "<<beta<<" "<<neglogl<<" "<<lg1<<" "<<lg2<<std::endl;
+                    */
+				}	
+			}
+		}
+	}
+	if(std::isnan(neglogl)) {
+		std::cout << " !!!!! FATAL ERROR !!!! - Likelihood evaluated to NaN. " << std::endl;
+		for(unsigned int i=0; i<npars; ++i) std::cout << "parameter " << i << ":" << pars[i] << std::endl;
+		exit( 1 );
+	}
+	return neglogl;
+}
+
+double NuFit::model_base::likelihood_gof_say(const double *pars) 
+{
+
+	// calculates full likelihood (including data-only dependent terms)
+	double neglogl = likelihood_say(pars);
+
+    //std::cout<<"neglogl"<<neglogl<<std::endl;
+	neglogl = likelihood_gof_say(neglogl); // adds the parameter independent terms
+						
+	return neglogl;
+}
+double NuFit::model_base::likelihood_gof_say(double neglogl) 
+{
+       
+    // need to loop over all eventselections and all bins
+	// adds terms to likelihood that are parameter independent
+	// idential to the saturated gof (Baker, Cousins 1984)
+	// note that delta-llh values cancel these terms again
+
+	//std::cout << neglogl << std::endl;
+
+    for (unsigned int i=0; i<ndatasets; ++i) {
+        hists &dataset = input[i];
+
+        double observed = 0.0;
+        double sigmasq = 0.0;
+        double alpha = 0.0;
+        double beta = 0.0;
+        double likelihood = 0.0;
+        for (unsigned int k=0; k<dataset.get_nbinsx(); ++k) {
+            for (unsigned int l=0; l<dataset.get_nbinsy(); ++l) {
+                for (unsigned int m=0; m<dataset.get_nbinsz(); ++m) {
+		        	// ROOT convention: bin indices run from 1 to N
+		        	observed = dataset.data.hist.GetBinContent(k+1, l+1, m+1);
+                    if (observed) {
+                        sigmasq = dataset.sigmasq.GetBinContent(k+1, l+1, m+1);
+                        alpha = observed*observed/sigmasq+1;
+                        beta = observed/sigmasq;
+
+                        likelihood = alpha*TMath::Log(beta)-((observed+alpha)*TMath::Log(1+beta));
+
+		            	neglogl += (likelihood+TMath::LnGamma(alpha+observed)-TMath::LnGamma(alpha));
+                    }
+                }
+            }
+        }
+    }
+
+    return neglogl;
+}
+
+double NuFit::model_base::likelihood_abs_say(const double *pars)
+{
+    // calculates full likelihood (including data-only dependent terms)
+    double neglogl = likelihood_say(pars);
+    neglogl = likelihood_abs_say(neglogl); // adds the parameter independent terms
+    return neglogl;
+}
+
+double NuFit::model_base::likelihood_abs_say(double neglogl)
+{
+
+    // need to loop over all eventselections and all bins
+    // adds terms to likelihood that are parameter independent 
+	//std::cout << neglogl << std::endl;
+
+    for (unsigned int i=0; i<ndatasets; ++i) {
+        hists &dataset = input[i];
+        double observed = 0.0;
+        for (unsigned int k=0; k<dataset.get_nbinsx(); ++k) {
+            for (unsigned int l=0; l<dataset.get_nbinsy(); ++l) {
+                for (unsigned int m=0; m<dataset.get_nbinsz(); ++m) {
+                    observed = dataset.data.hist.GetBinContent(k+1, l+1, m+1);	
+                    neglogl += log_factorial((int)observed); 
+                }
+            }
+        }
+    }
+
+    return neglogl;
+}
 double NuFit::model_base::likelihood(const double *pars)
 {
 
 	// calculates a joint poisson-likelihood over all bins
 	// ignores terms that are independent of the model parameters
 
-        double neglogl=0.0;
+    double neglogl=0.0;
 
 	//test if any of the parameters is NaN
 	//for(unsigned int i=0; i<npars; ++i) {

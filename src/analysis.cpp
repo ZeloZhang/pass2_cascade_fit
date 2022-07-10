@@ -18,7 +18,7 @@ void NuFit::analysis::create()
 
     // define cascade signal sample
     std::vector<double> binsx; // logE
-    for (unsigned int i=0; i<23; ++i)    
+    for (unsigned int i=2; i<23; ++i)    
     //for (unsigned int i=7; i<23; ++i)    
     //for (unsigned int i=2; i<12; ++i)    
         binsx.push_back(2.6 + 0.2 * i);
@@ -64,8 +64,8 @@ void NuFit::analysis::create()
 
     // define muon background sample
     std::vector<double> binsx2; // logE
-    //binsx2.push_back(2.6);
-    binsx2.push_back(4);
+    binsx2.push_back(2.6);
+    //binsx2.push_back(4);
     binsx2.push_back(4.778);
 
     std::vector<double> binsy2; // cosz (1 bin: all-sky)
@@ -86,8 +86,8 @@ void NuFit::analysis::create()
         
     // define numu control sample
     std::vector<double> binsx3;
-    //for (unsigned int i=2; i<12; ++i)
-    for (unsigned int i=7; i<12; ++i)
+    for (unsigned int i=2; i<12; ++i)
+    //for (unsigned int i=7; i<12; ++i)
     //for (unsigned int i=7; i<12; ++i)
          binsx3.push_back(2.6 + 0.2 * i);
 
@@ -102,8 +102,8 @@ void NuFit::analysis::create()
     std::vector<NuFit::hists> analyses;
     analyses.push_back(analysis1);
     //analyses.push_back(analysis11);
-    //analyses.push_back(analysis2);
-    //analyses.push_back(analysis3);
+    analyses.push_back(analysis2);
+    analyses.push_back(analysis3);
 
     // create astro model. then create base model
     NuFit::astro_model_single_plaw *astro = new astro_model_single_plaw();
@@ -185,7 +185,7 @@ void NuFit::analysis::change_astro_model(NuFit::astro_model_base *astro)
 double NuFit::analysis::get_likelihood(const double *pars)
 {
     // this is being minimized when stats class is used (interface to ROOT Minuit2)
-    double neglogl = model->likelihood(pars);
+    double neglogl = model->likelihood_say(pars);
     ++n_llh_evals;
 
     // add verbosity if requested
@@ -208,13 +208,13 @@ double NuFit::analysis::get_likelihood(const double *pars)
 double NuFit::analysis::get_likelihood_gof(const double *pars)
 {
     // factor of 2 for Wilk's theorem
-    return 2.0 * model->likelihood_gof(pars);
+    return 2.0 * model->likelihood_gof_say(pars);
 }
 
 double NuFit::analysis::get_likelihood_abs(const double *pars)
 {
     // factor of 2 for Wilk's theorem
-    return 2.0 * model->likelihood_abs(pars);
+    return 2.0 * model->likelihood_abs_say(pars);
 }
 
 double NuFit::analysis::get_lnprob(boost::python::numeric::array pars_)
@@ -226,7 +226,7 @@ double NuFit::analysis::get_lnprob(boost::python::numeric::array pars_)
         pars[i] = boost::python::extract<double>(pars_[i]);
 
     // make log-likelihood positive
-    return (-1.0) * model->likelihood_abs(pars); 
+    return (-1.0) * model->likelihood_abs_say(pars); 
 }
 
 unsigned int NuFit::analysis::get_n_llh_evals() 
