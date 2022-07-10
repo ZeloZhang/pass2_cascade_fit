@@ -167,7 +167,7 @@ double NuFit::model_base::likelihood_say(const double *pars){
         double sigmasq = 0.0;
         double alpha = 0.0;
         double beta = 0.0;
-        double likelihood = 0;
+        double logl = 0;
 		for (unsigned int k=0; k<dataset.get_nbinsx(); ++k) {
 			for (unsigned int l=0; l<dataset.get_nbinsy(); ++l) {
 				for (unsigned int m=0; m<dataset.get_nbinsz(); ++m) {
@@ -181,9 +181,9 @@ double NuFit::model_base::likelihood_say(const double *pars){
 
                     alpha = expected*expected/sigmasq+1;
                     beta = expected/sigmasq;
-                    likelihood = alpha*TMath::Log(beta)-((observed+alpha)*TMath::Log(1+beta));
+                    logl = alpha*TMath::Log(beta)-((observed+alpha)*TMath::Log(1+beta))+TMath::LnGamma(alpha+observed)-TMath::LnGamma(alpha);
 
-					neglogl -= (likelihood+TMath::LnGamma(alpha+observed)-TMath::LnGamma(alpha));
+					neglogl -= logl;
                     /*
                     std::cout<<"expected"<<" "<<"observed"<<" "<<"sigmasq"<<std::endl;
                     std::cout<<expected<<" "<<observed<<" "<<sigmasq<<std::endl;
@@ -230,7 +230,7 @@ double NuFit::model_base::likelihood_gof_say(double neglogl)
         double sigmasq = 0.0;
         double alpha = 0.0;
         double beta = 0.0;
-        double likelihood = 0.0;
+        double logl = 0.0;
         for (unsigned int k=0; k<dataset.get_nbinsx(); ++k) {
             for (unsigned int l=0; l<dataset.get_nbinsy(); ++l) {
                 for (unsigned int m=0; m<dataset.get_nbinsz(); ++m) {
@@ -241,9 +241,9 @@ double NuFit::model_base::likelihood_gof_say(double neglogl)
                         alpha = observed*observed/sigmasq+1;
                         beta = observed/sigmasq;
 
-                        likelihood = alpha*TMath::Log(beta)-((observed+alpha)*TMath::Log(1+beta));
+                        logl = alpha*TMath::Log(beta)-((observed+alpha)*TMath::Log(1+beta))+TMath::LnGamma(alpha+observed)-TMath::LnGamma(alpha);
 
-		            	neglogl += (likelihood+TMath::LnGamma(alpha+observed)-TMath::LnGamma(alpha));
+		            	neglogl += logl;
                     }
                 }
             }
