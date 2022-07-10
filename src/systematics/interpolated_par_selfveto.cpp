@@ -24,8 +24,8 @@ NuFit::interpolated_par_selfveto::interpolated_par_selfveto(std::string par_name
         nue_selfveto_cascade -> add_simulated_point(250, dir + std::string("step250/nue_cascade.txt"));
         nue_selfveto_cascade -> add_simulated_point(500, dir + std::string("step500/nue_cascade.txt"));
         nue_selfveto_cascade -> add_simulated_point(750, dir + std::string("step750/nue_cascade.txt"));
-        nue_selfveto_cascade -> add_simulated_point(1000, dir + std::string("step1000/nue_cascade.txt"),true); //thi is baseline hist
-        nue_selfveto_cascade -> add_simulated_point(1001, dir + std::string("step1000/nue_cascade.txt")); 
+        nue_selfveto_cascade -> add_simulated_point(1000, baselinedir + std::string("nue_cascade.txt"),true); //thi is baseline hist
+        nue_selfveto_cascade -> add_simulated_point(1001, baselinedir + std::string("nue_cascade.txt")); 
         nue_selfveto_cascade -> add_simulated_point(1500, dir + std::string("step1500/nue_cascade.txt"));
         nue_selfveto_cascade -> add_simulated_point(2000, dir + std::string("step2000/nue_cascade.txt"));
         nue_selfveto_cascade -> add_simulated_point(2500, dir + std::string("step2500/nue_cascade.txt"));
@@ -38,8 +38,8 @@ NuFit::interpolated_par_selfveto::interpolated_par_selfveto(std::string par_name
         numu_selfveto_cascade -> add_simulated_point(250, dir + std::string("step250/numu_cascade.txt"));
         numu_selfveto_cascade -> add_simulated_point(500, dir + std::string("step500/numu_cascade.txt"));
         numu_selfveto_cascade -> add_simulated_point(750, dir + std::string("step750/numu_cascade.txt"));
-        numu_selfveto_cascade -> add_simulated_point(1000, dir + std::string("step1000/numu_cascade.txt"),true); //thi is baseline hist
-        numu_selfveto_cascade -> add_simulated_point(1001, dir + std::string("step1000/numu_cascade.txt")); 
+        numu_selfveto_cascade -> add_simulated_point(1000, baselinedir + std::string("numu_cascade.txt"),true); //thi is baseline hist
+        numu_selfveto_cascade -> add_simulated_point(1001, baselinedir + std::string("numu_cascade.txt")); 
         numu_selfveto_cascade -> add_simulated_point(1500, dir + std::string("step1500/numu_cascade.txt"));
         numu_selfveto_cascade -> add_simulated_point(2000, dir + std::string("step2000/numu_cascade.txt"));
         numu_selfveto_cascade -> add_simulated_point(2500, dir + std::string("step2500/numu_cascade.txt"));
@@ -52,8 +52,8 @@ NuFit::interpolated_par_selfveto::interpolated_par_selfveto(std::string par_name
         nutau_selfveto_cascade -> add_simulated_point(250, dir + std::string("step250/nutau_cascade.txt"));
         nutau_selfveto_cascade -> add_simulated_point(500, dir + std::string("step500/nutau_cascade.txt"));
         nutau_selfveto_cascade -> add_simulated_point(750, dir + std::string("step750/nutau_cascade.txt"));
-        nutau_selfveto_cascade -> add_simulated_point(1000, dir + std::string("step1000/nutau_cascade.txt"),true); //thi is baseline hist
-        nutau_selfveto_cascade -> add_simulated_point(1001, dir + std::string("step1000/nutau_cascade.txt")); 
+        nutau_selfveto_cascade -> add_simulated_point(1000, baselinedir + std::string("nutau_cascade.txt"),true); //thi is baseline hist
+        nutau_selfveto_cascade -> add_simulated_point(1001, baselinedir + std::string("nutau_cascade.txt")); 
         nutau_selfveto_cascade -> add_simulated_point(1500, dir + std::string("step1500/nutau_cascade.txt"));
         nutau_selfveto_cascade -> add_simulated_point(2000, dir + std::string("step2000/nutau_cascade.txt"));
         nutau_selfveto_cascade -> add_simulated_point(2500, dir + std::string("step2500/nutau_cascade.txt"));
@@ -85,8 +85,8 @@ NuFit::interpolated_par_selfveto::interpolated_par_selfveto(std::string par_name
         nue_selfveto_muon -> add_simulated_point(250, dir + std::string("step250/nue_muon.txt"));
         nue_selfveto_muon -> add_simulated_point(500, dir + std::string("step500/nue_muon.txt"));
         nue_selfveto_muon -> add_simulated_point(750, dir + std::string("step750/nue_muon.txt"));
-        nue_selfveto_muon -> add_simulated_point(1000, dir + std::string("step1000/nue_muon.txt"),true); //thi is baseline hist
-        nue_selfveto_muon -> add_simulated_point(1001, dir + std::string("step1000/nue_muon.txt"));
+        nue_selfveto_muon -> add_simulated_point(1000, baselinedir + std::string("nue_muon.txt"),true); //thi is baseline hist
+        nue_selfveto_muon -> add_simulated_point(1001, baselinedir + std::string("nue_muon.txt"));
         nue_selfveto_muon -> add_simulated_point(1500, dir + std::string("step1500/nue_muon.txt"));
         nue_selfveto_muon -> add_simulated_point(2000, dir + std::string("step2000/nue_muon.txt"));
         nue_selfveto_muon -> add_simulated_point(2500, dir + std::string("step2500/nue_muon.txt"));
@@ -99,8 +99,8 @@ NuFit::interpolated_par_selfveto::interpolated_par_selfveto(std::string par_name
         numu_selfveto_muon -> add_simulated_point(250, dir + std::string("step250/numu_muon.txt"));
         numu_selfveto_muon -> add_simulated_point(500, dir + std::string("step500/numu_muon.txt"));
         numu_selfveto_muon -> add_simulated_point(750, dir + std::string("step750/numu_muon.txt"));
-        numu_selfveto_muon -> add_simulated_point(1000, dir + std::string("step1000/numu_muon.txt"),true); //thi is baseline hist
-        numu_selfveto_muon -> add_simulated_point(1001, dir + std::string("step1000/numu_muon.txt"));
+        numu_selfveto_muon -> add_simulated_point(1000, baselinedir + std::string("numu_muon.txt"),true); //thi is baseline hist
+        numu_selfveto_muon -> add_simulated_point(1001, baselinedir + std::string("numu_muon.txt"));
         numu_selfveto_muon -> add_simulated_point(1500, dir + std::string("step1500/numu_muon.txt"));
         numu_selfveto_muon -> add_simulated_point(2000, dir + std::string("step2000/numu_muon.txt"));
         numu_selfveto_muon -> add_simulated_point(2500, dir + std::string("step2500/numu_muon.txt"));
@@ -113,8 +113,8 @@ NuFit::interpolated_par_selfveto::interpolated_par_selfveto(std::string par_name
         nutau_selfveto_muon -> add_simulated_point(250, dir + std::string("step250/nutau_muon.txt"));
         nutau_selfveto_muon -> add_simulated_point(500, dir + std::string("step500/nutau_muon.txt"));
         nutau_selfveto_muon -> add_simulated_point(750, dir + std::string("step750/nutau_muon.txt"));
-        nutau_selfveto_muon -> add_simulated_point(1000, dir + std::string("step1000/nutau_muon.txt"),true); //thi is baseline hist
-        nutau_selfveto_muon -> add_simulated_point(1001, dir + std::string("step1000/nutau_muon.txt"));
+        nutau_selfveto_muon -> add_simulated_point(1000, baselinedir + std::string("nutau_muon.txt"),true); //thi is baseline hist
+        nutau_selfveto_muon -> add_simulated_point(1001, baselinedir + std::string("nutau_muon.txt"));
         nutau_selfveto_muon -> add_simulated_point(1500, dir + std::string("step1500/nutau_muon.txt"));
         nutau_selfveto_muon -> add_simulated_point(2000, dir + std::string("step2000/nutau_muon.txt"));
         nutau_selfveto_muon -> add_simulated_point(2500, dir + std::string("step2500/nutau_muon.txt"));
@@ -146,8 +146,8 @@ NuFit::interpolated_par_selfveto::interpolated_par_selfveto(std::string par_name
         nue_selfveto_hybrid -> add_simulated_point(250, dir + std::string("step250/nue_hybrid.txt"));
         nue_selfveto_hybrid -> add_simulated_point(500, dir + std::string("step500/nue_hybrid.txt"));
         nue_selfveto_hybrid -> add_simulated_point(750, dir + std::string("step750/nue_hybrid.txt"));
-        nue_selfveto_hybrid -> add_simulated_point(1000, dir + std::string("step1000/nue_hybrid.txt"),true); //thi is baseline hist
-        nue_selfveto_hybrid -> add_simulated_point(1001, dir + std::string("step1000/nue_hybrid.txt"));
+        nue_selfveto_hybrid -> add_simulated_point(1000, baselinedir + std::string("nue_hybrid.txt"),true); //thi is baseline hist
+        nue_selfveto_hybrid -> add_simulated_point(1001, baselinedir + std::string("nue_hybrid.txt"));
         nue_selfveto_hybrid -> add_simulated_point(1500, dir + std::string("step1500/nue_hybrid.txt"));
         nue_selfveto_hybrid -> add_simulated_point(2000, dir + std::string("step2000/nue_hybrid.txt"));
         nue_selfveto_hybrid -> add_simulated_point(2500, dir + std::string("step2500/nue_hybrid.txt"));
@@ -160,8 +160,8 @@ NuFit::interpolated_par_selfveto::interpolated_par_selfveto(std::string par_name
         numu_selfveto_hybrid -> add_simulated_point(250, dir + std::string("step250/numu_hybrid.txt"));
         numu_selfveto_hybrid -> add_simulated_point(500, dir + std::string("step500/numu_hybrid.txt"));
         numu_selfveto_hybrid -> add_simulated_point(750, dir + std::string("step750/numu_hybrid.txt"));
-        numu_selfveto_hybrid -> add_simulated_point(1000, dir + std::string("step1000/numu_hybrid.txt"),true); //thi is baseline hist
-        numu_selfveto_hybrid -> add_simulated_point(1001, dir + std::string("step1000/numu_hybrid.txt"));
+        numu_selfveto_hybrid -> add_simulated_point(1000, baselinedir + std::string("numu_hybrid.txt"),true); //thi is baseline hist
+        numu_selfveto_hybrid -> add_simulated_point(1001, baselinedir + std::string("numu_hybrid.txt"));
         numu_selfveto_hybrid -> add_simulated_point(1500, dir + std::string("step1500/numu_hybrid.txt"));
         numu_selfveto_hybrid -> add_simulated_point(2000, dir + std::string("step2000/numu_hybrid.txt"));
         numu_selfveto_hybrid -> add_simulated_point(2500, dir + std::string("step2500/numu_hybrid.txt"));
@@ -174,8 +174,8 @@ NuFit::interpolated_par_selfveto::interpolated_par_selfveto(std::string par_name
         nutau_selfveto_hybrid -> add_simulated_point(250, dir + std::string("step250/nutau_hybrid.txt"));
         nutau_selfveto_hybrid -> add_simulated_point(500, dir + std::string("step500/nutau_hybrid.txt"));
         nutau_selfveto_hybrid -> add_simulated_point(750, dir + std::string("step750/nutau_hybrid.txt"));
-        nutau_selfveto_hybrid -> add_simulated_point(1000, dir + std::string("step1000/nutau_hybrid.txt"),true); //thi is baseline hist
-        nutau_selfveto_hybrid -> add_simulated_point(1001, dir + std::string("step1000/nutau_hybrid.txt"));
+        nutau_selfveto_hybrid -> add_simulated_point(1000, baselinedir + std::string("nutau_hybrid.txt"),true); //thi is baseline hist
+        nutau_selfveto_hybrid -> add_simulated_point(1001, baselinedir + std::string("nutau_hybrid.txt"));
         nutau_selfveto_hybrid -> add_simulated_point(1500, dir + std::string("step1500/nutau_hybrid.txt"));
         nutau_selfveto_hybrid -> add_simulated_point(2000, dir + std::string("step2000/nutau_hybrid.txt"));
         nutau_selfveto_hybrid -> add_simulated_point(2500, dir + std::string("step2500/nutau_hybrid.txt"));
