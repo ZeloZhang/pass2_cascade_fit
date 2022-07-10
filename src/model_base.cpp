@@ -74,6 +74,8 @@ void NuFit::model_base::store_parameters()
                 hist_ptrs.push_back(&dataset.data.hist);
                 hist_ptrs.push_back(&dataset.mcsum);
                 hist_ptrs.push_back(&dataset.sigmasq);
+                hist_ptrs.push_back(&dataset.gof);
+                hist_ptrs.push_back(&dataset.neglogl);
                 hist_ptrs.push_back(&dataset.nue.sigmasq);
                 hist_ptrs.push_back(&dataset.numu.sigmasq);
                 hist_ptrs.push_back(&dataset.nutau.sigmasq);
@@ -161,6 +163,7 @@ double NuFit::model_base::likelihood_say(const double *pars){
 	// need to loop over all eventselections and all bins
 	for (unsigned int i=0; i<ndatasets; ++i) {
 		hists &dataset = input[i];
+        dataset.neglogl.Reset();
 
 		double observed = 0.0;
 		double expected = 0.0;
@@ -182,6 +185,8 @@ double NuFit::model_base::likelihood_say(const double *pars){
                     alpha = expected*expected/sigmasq+1;
                     beta = expected/sigmasq;
                     logl = alpha*TMath::Log(beta)-((observed+alpha)*TMath::Log(1+beta))+TMath::LnGamma(alpha+observed)-TMath::LnGamma(alpha);
+                    //std::cout<<"logl"<<logl<<std::endl;
+                    dataset.neglogl.SetBinContent(k+1,l+1,m+1,-logl);
 
 					neglogl -= logl;
                     /*
@@ -208,7 +213,6 @@ double NuFit::model_base::likelihood_gof_say(const double *pars)
 	// calculates full likelihood (including data-only dependent terms)
 	double neglogl = likelihood_say(pars);
 
-    //std::cout<<"neglogl"<<neglogl<<std::endl;
 	neglogl = likelihood_gof_say(neglogl); // adds the parameter independent terms
 						
 	return neglogl;
@@ -222,9 +226,10 @@ double NuFit::model_base::likelihood_gof_say(double neglogl)
 	// note that delta-llh values cancel these terms again
 
 	//std::cout << neglogl << std::endl;
-
+   
     for (unsigned int i=0; i<ndatasets; ++i) {
         hists &dataset = input[i];
+        dataset.gof.Reset();
 
         double observed = 0.0;
         double sigmasq = 0.0;
@@ -242,14 +247,17 @@ double NuFit::model_base::likelihood_gof_say(double neglogl)
                         beta = observed/sigmasq;
 
                         logl = alpha*TMath::Log(beta)-((observed+alpha)*TMath::Log(1+beta))+TMath::LnGamma(alpha+observed)-TMath::LnGamma(alpha);
-
+                        dataset.gof.SetBinContent(k+1,l+1,m+1, dataset.neglogl.GetBinContent(k+1,l+1,m+1)+logl);
 		            	neglogl += logl;
                     }
+                    else {
+                        dataset.gof.SetBinContent(k+1,l+1,m+1, dataset.neglogl.GetBinContent(k+1,l+1,m+1));
+                    }
+
                 }
             }
         }
     }
-
     return neglogl;
 }
 

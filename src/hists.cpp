@@ -6,6 +6,8 @@ NuFit::hists::hists(std::string name, std::vector<double> userbins_x, std::vecto
 	  astro((name+std::string("_all_astro")).c_str(), (name+std::string("_all_astro")).c_str(), userbins_x.size()-1, &(userbins_x[0]), userbins_y.size()-1, &(userbins_y[0]), userbins_z.size()-1, &(userbins_z[0])),
 	  mcsum((name+std::string("_mcsum")).c_str(), (name+std::string("_mcsum")).c_str(), userbins_x.size()-1, &(userbins_x[0]), userbins_y.size()-1, &(userbins_y[0]), userbins_z.size()-1, &(userbins_z[0])), 
 	  sigmasq((name+std::string("_sigmasq")).c_str(), (name+std::string("_sigmasq")).c_str(), userbins_x.size()-1, &(userbins_x[0]), userbins_y.size()-1, &(userbins_y[0]), userbins_z.size()-1, &(userbins_z[0])), 
+	  gof((name+std::string("_gof")).c_str(), (name+std::string("_gof")).c_str(), userbins_x.size()-1, &(userbins_x[0]), userbins_y.size()-1, &(userbins_y[0]), userbins_z.size()-1, &(userbins_z[0])), 
+	  neglogl((name+std::string("_neglogl")).c_str(), (name+std::string("_neglogl")).c_str(), userbins_x.size()-1, &(userbins_x[0]), userbins_y.size()-1, &(userbins_y[0]), userbins_z.size()-1, &(userbins_z[0])), 
 	 
 
 	  nue((name+std::string("_nue")), userbins_x, userbins_y, userbins_z),

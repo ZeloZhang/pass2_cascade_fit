@@ -18,9 +18,9 @@ void NuFit::analysis::create()
 
     // define cascade signal sample
     std::vector<double> binsx; // logE
-    for (unsigned int i=2; i<23; ++i)    
+    for (unsigned int i=0; i<23; ++i)    
     //for (unsigned int i=7; i<23; ++i)    
-    //for (unsigned int i=2; i<12; ++i)    
+    //for (unsigned int i=0; i<12; ++i)    
         binsx.push_back(2.6 + 0.2 * i);
 
     std::vector<double> binsy; // cosz (2 bins: Northern Sky, Southern Sky)
@@ -55,8 +55,8 @@ void NuFit::analysis::create()
     std::vector<double> binsy11; // cosz (2 bins: Northern Sky, Southern Sky)
     binsy11.push_back(-1.0);
     binsy11.push_back(0.2);
-    //binsy11.push_back(0.6);
-    //binsy11.push_back(1.0);
+    binsy11.push_back(0.6);
+    binsy11.push_back(1.0);
 
     NuFit::hists analysis11("cascade_all_he", binsx11, binsy11, binsz); 
     analysis11.read(dir_baseline+name_nue, dir_baseline+name_numu, dir_baseline+name_nutau, dir_baseline+name_mu, defdir+name_data);
@@ -86,7 +86,7 @@ void NuFit::analysis::create()
         
     // define numu control sample
     std::vector<double> binsx3;
-    for (unsigned int i=2; i<12; ++i)
+    for (unsigned int i=0; i<12; ++i)
     //for (unsigned int i=7; i<12; ++i)
     //for (unsigned int i=7; i<12; ++i)
          binsx3.push_back(2.6 + 0.2 * i);
@@ -109,10 +109,9 @@ void NuFit::analysis::create()
     NuFit::astro_model_single_plaw *astro = new astro_model_single_plaw();
     //NuFit::astro_model_plaw_singlep *astro = new astro_model_plaw_singlep();
     //base_model needs to know the input data as well as the astro model
-    NuFit::model_base *mymodel = new model_base(analyses, astro);
-    model = mymodel;
+    //NuFit::model_base *mymodel = new model_base(analyses, astro);
+    //model = mymodel;
     
-    /*
     // comment out code below if you don't need systematics        
     std::vector<std::string> analysis_names;
     std::map<std::string, NuFit::hists*> map_analyses;
@@ -168,7 +167,6 @@ void NuFit::analysis::create()
     NuFit::model_base_sys *mymodel = new model_base_sys(analyses, astro, systematics, 10);
     model = mymodel; 
     // end of analysis code
-    */
     
     std::cout << std::endl;
     std::cout << "... wrapping done" << std::endl; 
