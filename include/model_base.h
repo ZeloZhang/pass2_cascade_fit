@@ -97,6 +97,7 @@ namespace NuFit
 			void fill_parameters(std::map<std::string, double> &pars_map, double *pars);
 			virtual void update_hists(const double *pars);	
 			virtual void update_sum();
+            void update_sigmasq(const double *astro_pars, const double *pars);
 			NuFit::astro_model_base *astro_model;
 
 			// cache log factorials
@@ -112,7 +113,6 @@ namespace NuFit
 		private:
 			void update_astro(const double *astro_pars);
 			void update_atmospherics(const double *pars);
-            void update_sigmasq(const double *astro_pars, const double *pars);
 			
 	};
 

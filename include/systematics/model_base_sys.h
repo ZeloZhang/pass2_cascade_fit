@@ -50,6 +50,7 @@ namespace NuFit
 			virtual ~model_base_sys();	
 
 			double likelihood(const double *pars); // calls likelihood from base + adds priors
+			double likelihood_say(const double *pars); // calls say likelihood from base + adds priors
 			double logprior(const double *pars); // add prior penalty
 
 			//void update_auxillary_data();
@@ -58,6 +59,8 @@ namespace NuFit
 					
 		protected:	
 			void update_hists(const double *pars);
+			void update_sigmasq(const double *astro_pars, const double *pars);
+            double get_efficiency_correction(const double *pars, const std::string &dataset_name, const std::string &flavor, const std::string &component, const unsigned int binx, const unsigned int biny, const unsigned int binz);
 			void update_bincorrections(const double *pars);	
 			void update_sum();
 
@@ -76,9 +79,9 @@ namespace NuFit
 			std::vector<std::string> components;
 			std::string skip;
 
-                        double pivot_energy_delta_cr_conv;
-                        double pivot_energy_delta_cr_prompt;
-                        double pivot_energy_delta_cr_muon;
+            double pivot_energy_delta_cr_conv;
+            double pivot_energy_delta_cr_prompt;
+            double pivot_energy_delta_cr_muon;
 
 			// priors
 			bool add_prior_penalty;
@@ -91,9 +94,9 @@ namespace NuFit
 			double prior_deltacr_mean_default;
 			double prior_deltacr_sigma;
 
-                        double prior_muon_norm_mlb_mean_default;
-                        double prior_muon_norm_mlb_mean_current;
-                        double prior_muon_norm_mlb_sigma;
+            double prior_muon_norm_mlb_mean_default;
+            double prior_muon_norm_mlb_mean_current;
+            double prior_muon_norm_mlb_sigma;
 
 			double prior_scattering_current;
 			double prior_scattering_default;
