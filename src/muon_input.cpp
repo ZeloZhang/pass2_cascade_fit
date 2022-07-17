@@ -2,7 +2,24 @@
 
 NuFit::muon_input::muon_input(std::string name, std::vector<double> &bins_x, std::vector<double> &bins_y, std::vector<double> &bins_z)
 	: hist((name+std::string("")).c_str(), (name+std::string("")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
-    sigmasq((name+std::string("_sigmasq")).c_str(), (name+std::string("_sigmasq")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])) { }
+    sigmasq((name+std::string("_sigmasq")).c_str(), (name+std::string("_sigmasq")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
+    efficiency_correction((name+std::string("_efficiency_correction")).c_str(), (name+std::string("_efficiency_correction")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])) 
+{ 
+    unsigned int nbinsx = bins_x.size()-1;
+    unsigned int nbinsy = bins_y.size()-1;
+    unsigned int nbinsz = bins_z.size()-1;
+
+    for (unsigned int k=0; k<nbinsx; ++k)
+    {
+        for (unsigned int l=0; k<nbinsy; ++k)
+        {
+            for (unsigned int m=0; k<nbinsz; ++k)
+            {
+                efficiency_correction.SetBinContent(k+1,l+1,m+1,1);
+            }
+        }
+    }
+}
 	 
 	
 

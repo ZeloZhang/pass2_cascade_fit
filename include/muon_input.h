@@ -31,7 +31,8 @@ namespace NuFit
 			muon_input(std::string name, std::vector<double> &bins_x, std::vector<double> &bins_y, std::vector<double> &bins_z);
 			TH3D hist; // histogram of observables. changes during fitting.
 			TH3D hist_orig; // histogram of observables. reflects nominal input simulation.
-			TH3D sigmasq; // histogram of observables. reflects nominal input simulation.
+			TH3D sigmasq; // histogram of observables. keep MC uncertainty information 
+			TH3D efficiency_correction; // histogram of observables. efficiency correction from systematic uncertainties. 
 	
 			std::vector<unsigned int> run;
 			std::vector<unsigned int> event;

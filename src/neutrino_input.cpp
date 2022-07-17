@@ -4,16 +4,32 @@ NuFit::neutrino_input::neutrino_input(std::string name, std::vector<double> &bin
 	: conv((name+std::string("_conv")).c_str(), (name+std::string("_conv")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
 	  prompt((name+std::string("_prompt")).c_str(), (name+std::string("_prompt")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
 	  astro((name+std::string("_astro")).c_str(), (name+std::string("_astro")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])), 
-	  sigmasq((name+std::string("_sigmasq")).c_str(), (name+std::string("_sigmasq")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])) 
+	  sigmasq((name+std::string("_sigmasq")).c_str(), (name+std::string("_sigmasq")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
+	  conv_efficiency_correction((name+std::string("_conv_efficiency_correction")).c_str(), (name+std::string("_conv_efficiency_correction")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
+	  prompt_efficiency_correction((name+std::string("_prompt_efficiency_correction")).c_str(), (name+std::string("_prompt_efficiency_correction")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
+	  astro_efficiency_correction((name+std::string("_astro_efficiency_correction")).c_str(), (name+std::string("_astro_efficiency_correction")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0]))
 { 
-        binsx = bins_x;
-        nbinsx = bins_x.size()-1;
+    binsx = bins_x;
+    nbinsx = bins_x.size()-1;
 
-        binsy = bins_y;
-        nbinsy = bins_y.size()-1;
+    binsy = bins_y;
+    nbinsy = bins_y.size()-1;
 
-        binsz = bins_z;
-        nbinsz = bins_z.size()-1;
+    binsz = bins_z;
+    nbinsz = bins_z.size()-1;
+
+    for (unsigned int k=0; k<nbinsx; ++k)
+    {
+        for (unsigned int l=0; k<nbinsy; ++k)
+        {
+            for (unsigned int m=0; k<nbinsz; ++k)
+            {
+                conv_efficiency_correction.SetBinContent(k+1,l+1,m+1,1);
+                prompt_efficiency_correction.SetBinContent(k+1,l+1,m+1,1);
+                astro_efficiency_correction.SetBinContent(k+1,l+1,m+1,1);
+            }
+        }
+    }
 }
 
 void NuFit::neutrino_input::read(std::string infile) 

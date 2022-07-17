@@ -58,11 +58,11 @@ namespace NuFit
 			unsigned int get_nbinsz() const;
 			std::vector<double> get_binsz();
 
-			double get_bincontent(const std::string &flavor, const std::string &component, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz);
-			void set_bincontent(const std::string &flavor, const std::string &component, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz, const double &value);
+			double get_bincontent(const std::string &hist_class, const std::string &flavor, const std::string &component, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz);
+			void set_bincontent(const std::string &hist_class, const std::string &flavor, const std::string &component, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz, const double &value);
 
-			double get_bincontent_muon(const unsigned int &binx, const unsigned int &biny, const unsigned int &binz);
-			void set_bincontent_muon(const unsigned int &binx, const unsigned int &biny, const unsigned int &binz, const double &value);
+			double get_bincontent_muon(const std::string &hist_class, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz);
+			void set_bincontent_muon(const std::string &hist_class, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz, const double &value);
 	
 			void read(std::string f_nue, std::string f_numu, std::string f_nutau, std::string f_muon, std::string f_data);	
 	

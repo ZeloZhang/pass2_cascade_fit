@@ -177,8 +177,9 @@ void NuFit::model_base_sys::update_bincorrections(const double *pars)
                                 efficiency_correction *= (it->second)->get_efficiency_correction(par_value, dataset.name, flavor, component, k, l, m);    
                             }
                             // apply efficiency correction to bin    
-                            double bin_content = dataset.get_bincontent(flavor, component, k+1, l+1, m+1);    
-                            dataset.set_bincontent(flavor, component, k+1, l+1, m+1, bin_content * efficiency_correction);
+                            double bin_content = dataset.get_bincontent("number", flavor, component, k+1, l+1, m+1);    
+                            dataset.set_bincontent("number", flavor, component, k+1, l+1, m+1, bin_content * efficiency_correction);
+                            dataset.set_bincontent("correction", flavor, component, k+1, l+1, m+1, efficiency_correction);
                         }
                     }
 
@@ -196,8 +197,9 @@ void NuFit::model_base_sys::update_bincorrections(const double *pars)
                         double par_value = pars[par_index];
                         efficiency_correction *= (it->second)->get_efficiency_correction_muon(par_value, dataset.name, k, l, m);
                     }
-                    double bin_content = dataset.get_bincontent_muon(k+1, l+1, m+1);
-                    dataset.set_bincontent_muon(k+1, l+1, m+1, bin_content * efficiency_correction);
+                    double bin_content = dataset.get_bincontent_muon("number", k+1, l+1, m+1);
+                    dataset.set_bincontent_muon("number", k+1, l+1, m+1, bin_content * efficiency_correction);
+                    dataset.set_bincontent_muon("correction", k+1, l+1, m+1, efficiency_correction);
                 }    
             }
         }
@@ -284,9 +286,9 @@ void NuFit::model_base_sys::update_hists(const double *pars)
         dataset.muon.hist.Scale(muon_norm);
     }
 
-    update_bincorrections(pars); // this is new compared to base class implementation: model_base.cpp
+    update_bincorrections(pars); // this is new compared to base class implementation: model_base.cpp. Must run this before run update_sigmasq because efficiency corrections are updated in this function.
     update_sum();
-    update_sigmasq(astro_pars,pars);
+    update_sigmasq(astro_pars,pars); 
 
 }
 
@@ -320,18 +322,19 @@ void NuFit::model_base_sys::update_sigmasq(const double *astro_pars, const doubl
 
         double efficiency_correction = 1.0;
 		for (unsigned int j=0; j<dataset.muon.get_size(); ++j){ 
-            k = dataset.muon.sigmasq.GetXaxis()->FindBin(dataset.muon.logenergy_rec[j])-1;
-            l = dataset.muon.sigmasq.GetYaxis()->FindBin(dataset.muon.coszenith_rec[j])-1;
-            m = dataset.muon.sigmasq.GetZaxis()->FindBin(dataset.muon.ra_rec[j])-1;
-            if (k < 0){k = 0;}
-            else if (k>dataset.muon.sigmasq.GetNbinsX()-1){k=dataset.muon.sigmasq.GetNbinsX()-1;}
-            if (l < 0){l = 0;}
-            else if (l>dataset.muon.sigmasq.GetNbinsY()-1){l=dataset.muon.sigmasq.GetNbinsY()-1;}
-            if (m < 0){m = 0;}
-            else if (m>dataset.muon.sigmasq.GetNbinsZ()-1){m=dataset.muon.sigmasq.GetNbinsZ()-1;}
+            k = dataset.muon.sigmasq.GetXaxis()->FindBin(dataset.muon.logenergy_rec[j]);
+            l = dataset.muon.sigmasq.GetYaxis()->FindBin(dataset.muon.coszenith_rec[j]);
+            m = dataset.muon.sigmasq.GetZaxis()->FindBin(dataset.muon.ra_rec[j]);
+            if (k < 1){k = 1;}
+            else if (k>dataset.muon.sigmasq.GetNbinsX()){k=dataset.muon.sigmasq.GetNbinsX();}
+            if (l < 1){l = 1;}
+            else if (l>dataset.muon.sigmasq.GetNbinsY()){l=dataset.muon.sigmasq.GetNbinsY();}
+            if (m < 1){m = 1;}
+            else if (m>dataset.muon.sigmasq.GetNbinsZ()){m=dataset.muon.sigmasq.GetNbinsZ();}
 
             efficiency_correction = 1.0;
             // loop through parameters
+            /*
             for (std::unordered_map<std::string, NuFit::interpolated_par *>::const_iterator it = systematics_interp.begin(); it != systematics_interp.end(); ++it)
                 {
                     // find parameter index
@@ -339,6 +342,8 @@ void NuFit::model_base_sys::update_sigmasq(const double *astro_pars, const doubl
                     double par_value = pars[par_index];
                     efficiency_correction *= (it->second)->get_efficiency_correction_muon(par_value, dataset.name, k, l, m);
                 }
+            */
+            efficiency_correction = dataset.get_bincontent_muon("correction",k,l,m);
             w = dataset.muon.muon_weight[j]*pars[0]*TMath::Power(dataset.muon.energy_prim[j]/pivot_energy_delta_cr_muon, -1.0*pars[3])*efficiency_correction;
             dataset.muon.sigmasq.Fill(dataset.muon.logenergy_rec[j], dataset.muon.coszenith_rec[j], dataset.muon.ra_rec[j], w*w);
         }
@@ -346,23 +351,26 @@ void NuFit::model_base_sys::update_sigmasq(const double *astro_pars, const doubl
 
 		// nue 
 		for (unsigned int j=0; j<dataset.nue.get_size(); ++j){ 
-            k = dataset.nue.sigmasq.GetXaxis()->FindBin(dataset.nue.logenergy_rec[j])-1;
-            l = dataset.nue.sigmasq.GetYaxis()->FindBin(dataset.nue.coszenith_rec[j])-1;
-            m = dataset.nue.sigmasq.GetZaxis()->FindBin(dataset.nue.ra_rec[j])-1;
-            if (k < 0){k = 0;}
-            else if (k>dataset.nue.sigmasq.GetNbinsX()-1){k=dataset.nue.sigmasq.GetNbinsX()-1;}
-            if (l < 0){l = 0;}
-            else if (l>dataset.nue.sigmasq.GetNbinsY()-1){l=dataset.nue.sigmasq.GetNbinsY()-1;}
-            if (m < 0){m = 0;}
-            else if (m>dataset.nue.sigmasq.GetNbinsZ()-1){m=dataset.nue.sigmasq.GetNbinsZ()-1;}
+            k = dataset.nue.sigmasq.GetXaxis()->FindBin(dataset.nue.logenergy_rec[j]);
+            l = dataset.nue.sigmasq.GetYaxis()->FindBin(dataset.nue.coszenith_rec[j]);
+            m = dataset.nue.sigmasq.GetZaxis()->FindBin(dataset.nue.ra_rec[j]);
+            if (k < 1){k = 1;}
+            else if (k>dataset.nue.sigmasq.GetNbinsX()){k=dataset.nue.sigmasq.GetNbinsX();}
+            if (l < 1){l = 1;}
+            else if (l>dataset.nue.sigmasq.GetNbinsY()){l=dataset.nue.sigmasq.GetNbinsY();}
+            if (m < 1){m = 1;}
+            else if (m>dataset.nue.sigmasq.GetNbinsZ()){m=dataset.nue.sigmasq.GetNbinsZ();}
             //std::cout<<dataset.nue.logenergy_rec[j]<<" "<<dataset.nue.coszenith_rec[j]<<" "<<dataset.nue.ra_rec[j]<<std::endl;
             //std::cout<<"kkjlkjlkjlkj:"<<k<<std::endl;
 
-            efficiency_correction = get_efficiency_correction(pars,dataset.name,"NuE","Astro",k,l,m);
+            //efficiency_correction = get_efficiency_correction(pars,dataset.name,"NuE","Astro",k,l,m);
+            efficiency_correction = dataset.get_bincontent("correction","NuE","Astro",k,l,m);
             w_astro = dataset.nue.astro_weight[j]*astro_model->get_flux(astro_pars, dataset.nue.energy_prim[j], dataset.nue.coszenith_prim[j], dataset.nue.ra_prim[j], dataset.nue.ptype[j])*efficiency_correction;
-            efficiency_correction = get_efficiency_correction(pars,dataset.name,"NuE","Conv",k,l,m);
+            //efficiency_correction = get_efficiency_correction(pars,dataset.name,"NuE","Conv",k,l,m);
+            efficiency_correction = dataset.get_bincontent("correction","NuE","Conv",k,l,m);
             w_conv = dataset.nue.conv_weight[j]*pars[1]*TMath::Power(dataset.nue.energy_prim[j]/pivot_energy_delta_cr_conv, -1.0*pars[3])*efficiency_correction;
-            efficiency_correction = get_efficiency_correction(pars,dataset.name,"NuE","Prompt",k,l,m);
+            //efficiency_correction = get_efficiency_correction(pars,dataset.name,"NuE","Prompt",k,l,m);
+            efficiency_correction = dataset.get_bincontent("correction","NuE","Prompt",k,l,m);
             w_prompt = dataset.nue.prompt_weight[j]*TMath::Power(dataset.nue.energy_prim[j]/pivot_energy_delta_cr_prompt, -1.0*pars[3])*pars[2]*efficiency_correction;
             w = w_astro + w_conv + w_prompt;
 			dataset.nue.sigmasq.Fill(dataset.nue.logenergy_rec[j], dataset.nue.coszenith_rec[j], dataset.nue.ra_rec[j], w*w);
@@ -370,21 +378,24 @@ void NuFit::model_base_sys::update_sigmasq(const double *astro_pars, const doubl
 		
 		// numu
 		for (unsigned int j=0; j<dataset.numu.get_size(); ++j){
-            k = dataset.numu.sigmasq.GetXaxis()->FindBin(dataset.numu.logenergy_rec[j])-1;
-            l = dataset.numu.sigmasq.GetYaxis()->FindBin(dataset.numu.coszenith_rec[j])-1;
-            m = dataset.numu.sigmasq.GetZaxis()->FindBin(dataset.numu.ra_rec[j])-1;
-            if (k < 0){k = 0;}
-            else if (k>dataset.numu.sigmasq.GetNbinsX()-1){k=dataset.numu.sigmasq.GetNbinsX()-1;}
-            if (l < 0){l = 0;}
-            else if (l>dataset.numu.sigmasq.GetNbinsY()-1){l=dataset.numu.sigmasq.GetNbinsY()-1;}
-            if (m < 0){m = 0;}
-            else if (m>dataset.numu.sigmasq.GetNbinsZ()-1){m=dataset.numu.sigmasq.GetNbinsZ()-1;}
+            k = dataset.numu.sigmasq.GetXaxis()->FindBin(dataset.numu.logenergy_rec[j]);
+            l = dataset.numu.sigmasq.GetYaxis()->FindBin(dataset.numu.coszenith_rec[j]);
+            m = dataset.numu.sigmasq.GetZaxis()->FindBin(dataset.numu.ra_rec[j]);
+            if (k < 1){k = 1;}
+            else if (k>dataset.numu.sigmasq.GetNbinsX()){k=dataset.numu.sigmasq.GetNbinsX();}
+            if (l < 1){l = 1;}
+            else if (l>dataset.numu.sigmasq.GetNbinsY()){l=dataset.numu.sigmasq.GetNbinsY();}
+            if (m < 1){m = 1;}
+            else if (m>dataset.numu.sigmasq.GetNbinsZ()){m=dataset.numu.sigmasq.GetNbinsZ();}
 
-            efficiency_correction = get_efficiency_correction(pars,dataset.name,"NuMu","Astro",k,l,m);
+            //efficiency_correction = get_efficiency_correction(pars,dataset.name,"NuMu","Astro",k,l,m);
+            efficiency_correction = dataset.get_bincontent("correction","NuMu","Astro",k,l,m);
             w_astro = dataset.numu.astro_weight[j]*astro_model->get_flux(astro_pars, dataset.numu.energy_prim[j], dataset.numu.coszenith_prim[j], dataset.numu.ra_prim[j], dataset.numu.ptype[j])*efficiency_correction;
-            efficiency_correction = get_efficiency_correction(pars,dataset.name,"NuMu","Conv",k,l,m);
+            //efficiency_correction = get_efficiency_correction(pars,dataset.name,"NuMu","Conv",k,l,m);
+            efficiency_correction = dataset.get_bincontent("correction","NuMu","Conv",k,l,m);
             w_conv = dataset.numu.conv_weight[j]*pars[1]*TMath::Power(dataset.numu.energy_prim[j]/pivot_energy_delta_cr_conv, -1.0*pars[3])*efficiency_correction;
-            efficiency_correction = get_efficiency_correction(pars,dataset.name,"NuMu","Prompt",k,l,m);
+            //efficiency_correction = get_efficiency_correction(pars,dataset.name,"NuMu","Prompt",k,l,m);
+            efficiency_correction = dataset.get_bincontent("correction","NuMu","Prompt",k,l,m);
             w_prompt = dataset.numu.prompt_weight[j]*pars[2]*TMath::Power(dataset.numu.energy_prim[j]/pivot_energy_delta_cr_prompt, -1.0*pars[3])*efficiency_correction;
             w = w_astro + w_conv + w_prompt;
 			dataset.numu.sigmasq.Fill(dataset.numu.logenergy_rec[j], dataset.numu.coszenith_rec[j], dataset.numu.ra_rec[j], w*w);
@@ -392,21 +403,24 @@ void NuFit::model_base_sys::update_sigmasq(const double *astro_pars, const doubl
 
 		// nutau
 		for (unsigned int j=0; j<dataset.nutau.get_size(); ++j){
-            k = dataset.nutau.sigmasq.GetXaxis()->FindBin(dataset.nutau.logenergy_rec[j])-1;
-            l = dataset.nutau.sigmasq.GetYaxis()->FindBin(dataset.nutau.coszenith_rec[j])-1;
-            m = dataset.nutau.sigmasq.GetZaxis()->FindBin(dataset.nutau.ra_rec[j])-1;
-            if (k < 0){k = 0;}
-            else if (k>dataset.nutau.sigmasq.GetNbinsX()-1){k=dataset.nutau.sigmasq.GetNbinsX()-1;}
-            if (l < 0){l = 0;}
-            else if (l>dataset.nutau.sigmasq.GetNbinsY()-1){l=dataset.nutau.sigmasq.GetNbinsY()-1;}
-            if (m < 0){m = 0;}
-            else if (m>dataset.nutau.sigmasq.GetNbinsZ()-1){m=dataset.nutau.sigmasq.GetNbinsZ()-1;}
+            k = dataset.nutau.sigmasq.GetXaxis()->FindBin(dataset.nutau.logenergy_rec[j]);
+            l = dataset.nutau.sigmasq.GetYaxis()->FindBin(dataset.nutau.coszenith_rec[j]);
+            m = dataset.nutau.sigmasq.GetZaxis()->FindBin(dataset.nutau.ra_rec[j]);
+            if (k < 1){k = 1;}
+            else if (k>dataset.nutau.sigmasq.GetNbinsX()){k=dataset.nutau.sigmasq.GetNbinsX();}
+            if (l < 1){l = 1;}
+            else if (l>dataset.nutau.sigmasq.GetNbinsY()){l=dataset.nutau.sigmasq.GetNbinsY();}
+            if (m < 1){m = 1;}
+            else if (m>dataset.nutau.sigmasq.GetNbinsZ()){m=dataset.nutau.sigmasq.GetNbinsZ();}
 
-            efficiency_correction = get_efficiency_correction(pars,dataset.name,"NuTau","Astro",k,l,m);
+            //efficiency_correction = get_efficiency_correction(pars,dataset.name,"NuTau","Astro",k,l,m);
+            efficiency_correction = dataset.get_bincontent("correction","NuTau","Prompt",k,l,m);
             w_astro = dataset.nutau.astro_weight[j]*astro_model->get_flux(astro_pars, dataset.nutau.energy_prim[j], dataset.nutau.coszenith_prim[j], dataset.nutau.ra_prim[j], dataset.nutau.ptype[j])*efficiency_correction;
-            efficiency_correction = get_efficiency_correction(pars,dataset.name,"NuTau","Conv",k,l,m);
+            //efficiency_correction = get_efficiency_correction(pars,dataset.name,"NuTau","Conv",k,l,m);
+            efficiency_correction = dataset.get_bincontent("correction","NuTau","Prompt",k,l,m);
             w_conv = dataset.nutau.conv_weight[j]*pars[1]*TMath::Power(dataset.nutau.energy_prim[j]/pivot_energy_delta_cr_conv, -1.0*pars[3])*efficiency_correction;
-            efficiency_correction = get_efficiency_correction(pars,dataset.name,"NuTau","Prompt",k,l,m);
+            //efficiency_correction = get_efficiency_correction(pars,dataset.name,"NuTau","Prompt",k,l,m);
+            efficiency_correction = dataset.get_bincontent("correction","NuTau","Prompt",k,l,m);
             w_prompt = dataset.nutau.prompt_weight[j]*pars[2]*TMath::Power(dataset.nutau.energy_prim[j]/pivot_energy_delta_cr_prompt,-1.0*pars[3])*efficiency_correction;
             w = w_astro + w_conv + w_prompt;
 			dataset.nutau.sigmasq.Fill(dataset.nutau.logenergy_rec[j], dataset.nutau.coszenith_rec[j], dataset.nutau.ra_rec[j], w*w);
