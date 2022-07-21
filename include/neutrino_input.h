@@ -34,6 +34,9 @@ namespace NuFit
 			TH3D prompt; // histogram of observables. changes during fitting.
 			TH3D astro; // histogram of observables. changes during fitting.
 			TH3D sigmasq; // histogram of observables. changes during fitting.
+			TH3D conv_efficiency_correction;
+			TH3D prompt_efficiency_correction;
+			TH3D astro_efficiency_correction;
 	
 			std::vector<unsigned int> run;
 			std::vector<unsigned int> event;
@@ -44,29 +47,35 @@ namespace NuFit
 			std::vector<double> coszenith_rec;
 			std::vector<double> ra_rec;
 			std::vector<double> conv_weight;
+			std::vector<double> conv_weight_iter;
 			std::vector<double> prompt_weight;
+			std::vector<double> prompt_weight_iter;
 			std::vector<double> astro_weight;
+			std::vector<double> astro_weight_iter;
+			std::vector<double> k;
+			std::vector<double> m;
+			std::vector<double> l;
 			std::vector<NuFit::helpers::neutrino_type> ptype;
 	
 			void read(std::string infile);
 			unsigned int get_size();
  			unsigned int get_nbinsx() const;
-                        unsigned int get_nbinsy() const ;
-                        unsigned int get_nbinsz() const;
+            unsigned int get_nbinsy() const ;
+            unsigned int get_nbinsz() const;
 			void clear(); // careful. this clears all std::vectors
 	
 		private:
 			neutrino_input();
 			unsigned int size;
 
-                        // copy the bins
-                        std::vector<double> binsx; // log-energy
-                        std::vector<double> binsy; // cos-zenith
-                        std::vector<double> binsz; // right ascension
+            // copy the bins
+            std::vector<double> binsx; // log-energy
+            std::vector<double> binsy; // cos-zenith
+            std::vector<double> binsz; // right ascension
 
-                        unsigned int nbinsx;
-                        unsigned int nbinsy;
-                        unsigned int nbinsz;
+            unsigned int nbinsx;
+            unsigned int nbinsy;
+            unsigned int nbinsz;
 	
 	};
 

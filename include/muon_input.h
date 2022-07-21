@@ -43,6 +43,10 @@ namespace NuFit
 			std::vector<double> coszenith_rec;
 			std::vector<double> ra_rec;
 			std::vector<double> muon_weight;
+			std::vector<double> muon_weight_iter;
+			std::vector<double> k;
+			std::vector<double> m;
+			std::vector<double> l;
 	
 			void read(std::string &infile);
 			unsigned int get_size();

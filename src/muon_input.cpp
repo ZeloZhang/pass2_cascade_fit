@@ -34,39 +34,42 @@ void NuFit::muon_input::read(std::string &infile)
 	std::ifstream thisfile(infile);
 	if (thisfile.is_open()) 
 	{
-		 // first line contains variable headers
-		 getline(thisfile, line);
-		 while(getline(thisfile, line))
-		 {
-			 std::stringstream ss(line);
-			 double value[ncols];
-			 int col=0;
-			 while (ss >> value[col]) col++;  
+		// first line contains variable headers
+		getline(thisfile, line);
+		while(getline(thisfile, line))
+		{
+			std::stringstream ss(line);
+			double value[ncols];
+			int col=0;
+			while (ss >> value[col]) col++;  
 
-                         if( col!=ncols ) {
-                                std::cout << "FATAL! unexpected number of columns!" << std::endl;
-                                std::cout << "... exiting" << std::endl;
-                                exit(1);
-                         }
+                if( col!=ncols ) {
+                    std::cout << "FATAL! unexpected number of columns!" << std::endl;
+                    std::cout << "... exiting" << std::endl;
+                    exit(1);
+                }
 
-		     run.push_back((unsigned int) value[0]);
-			 event.push_back((unsigned int) value[1]);
-			 energy_prim.push_back(value[2]);
-			 coszenith_prim.push_back(value[3]);
-			 ra_prim.push_back(value[4]);
-			 logenergy_rec.push_back(value[5]);
-		     coszenith_rec.push_back(value[6]);
-			 ra_rec.push_back(value[7]);
-			 muon_weight.push_back(value[8]);	
-		 }
+		    run.push_back((unsigned int) value[0]);
+			event.push_back((unsigned int) value[1]);
+			energy_prim.push_back(value[2]);
+			coszenith_prim.push_back(value[3]);
+			ra_prim.push_back(value[4]);
+			logenergy_rec.push_back(value[5]);
+		    coszenith_rec.push_back(value[6]);
+			ra_rec.push_back(value[7]);
+			muon_weight.push_back(value[8]);	
+			muon_weight_iter.push_back(0);	
+            m.push_back(sigmasq.GetXaxis()->FindBin(value[7]));
+            l.push_back(sigmasq.GetXaxis()->FindBin(value[6]));
+            k.push_back(sigmasq.GetXaxis()->FindBin(value[5]));
+		}
 	}
         else
         {
-                std::cout << "FATAL! unable to open file: " << infile << std::endl;
-                std::cout << "... exiting" << std::endl;
-                exit(1);
+            std::cout << "FATAL! unable to open file: " << infile << std::endl;
+            std::cout << "... exiting" << std::endl;
+            exit(1);
         }
-
 
 	size = run.size();
 	return;

@@ -62,18 +62,24 @@ void NuFit::neutrino_input::read(std::string infile)
 				exit(1);
 			 }
 
-		         run.push_back((unsigned int) value[0]);
+		     run.push_back((unsigned int) value[0]);
 			 event.push_back((unsigned int) value[1]);
 			 ptype.push_back((NuFit::helpers::neutrino_type) value[2]);
 			 energy_prim.push_back(value[3]);
 			 coszenith_prim.push_back(value[4]);
 			 ra_prim.push_back(value[5]);
 			 logenergy_rec.push_back(value[6]);
-		         coszenith_rec.push_back(value[7]);
+		     coszenith_rec.push_back(value[7]);
 			 ra_rec.push_back(value[8]);
 			 conv_weight.push_back(value[9]);
+			 conv_weight_iter.push_back(0);
 			 prompt_weight.push_back(value[10]);
+			 prompt_weight_iter.push_back(0);
 			 astro_weight.push_back(value[11]);	
+			 astro_weight_iter.push_back(0);	
+             m.push_back(sigmasq.GetXaxis()->FindBin(value[8]));
+             l.push_back(sigmasq.GetXaxis()->FindBin(value[7]));
+             k.push_back(sigmasq.GetXaxis()->FindBin(value[6]));
 		 }
 	}
 	else 
