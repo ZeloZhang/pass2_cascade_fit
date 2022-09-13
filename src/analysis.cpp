@@ -19,17 +19,22 @@ void NuFit::analysis::create()
     // define cascade signal sample
     std::vector<double> binsx; // logE
     for (unsigned int i=0; i<23; ++i)    
+    //for (unsigned int i=4; i<23; ++i)    
+    //for (unsigned int i=0; i<8; ++i)    
+    //for (unsigned int i=4; i<8; ++i)    
+    //for (unsigned int i=4; i<11; ++i)    
     //for (unsigned int i=7; i<23; ++i)    
-    //for (unsigned int i=0; i<12; ++i)    
+    //for (unsigned int i=0; i<11; ++i)    
         binsx.push_back(2.6 + 0.2 * i);
 
     std::vector<double> binsy; // cosz (2 bins: Northern Sky, Southern Sky)
     //for (unsigned int i=0; i<11; ++i)
     //    binsy.push_back(-1.0+0.2*i);
-    binsy.push_back(-1);
+
+    binsy.push_back(-2);
     binsy.push_back(0.2);
     binsy.push_back(0.6);
-    binsy.push_back(1);
+    binsy.push_back(2);
 
     std::vector<double> binsz; // ra (1 bin)
     binsz.push_back(-10.);
@@ -48,29 +53,29 @@ void NuFit::analysis::create()
     analysis1.read(dir_baseline+name_nue, dir_baseline+name_numu, dir_baseline+name_nutau, dir_baseline+name_mu, defdir+name_data);
 
     /*
-    // define cascade signal sample
-    std::vector<double> binsx11; // logE
-    for (unsigned int i=13; i<23; ++i)    
-        binsx11.push_back(2.6 + 0.2 * i);
-    std::vector<double> binsy11; // cosz (2 bins: Northern Sky, Southern Sky)
-    binsy11.push_back(-1.0);
-    binsy11.push_back(0.2);
-    binsy11.push_back(0.6);
-    binsy11.push_back(1.0);
+    std::vector<double> binsx12; // logE
+    for (unsigned int i=11; i<23; ++i)    
+        binsx12.push_back(2.6 + 0.2 * i);
+    std::vector<double> binsy12; // cosz (2 bins: Northern Sky, Southern Sky)
+    binsy12.push_back(-1.0);
+    binsy12.push_back(0.2);
+    binsy12.push_back(0.6);
+    binsy12.push_back(1.0);
 
-    NuFit::hists analysis11("cascade_all_he", binsx11, binsy11, binsz); 
-    analysis11.read(dir_baseline+name_nue, dir_baseline+name_numu, dir_baseline+name_nutau, dir_baseline+name_mu, defdir+name_data);
+    NuFit::hists analysis12("cascade_all_he1", binsx12, binsy12, binsz); 
+    analysis12.read(dir_baseline+name_nue, dir_baseline+name_numu, dir_baseline+name_nutau, dir_baseline+name_mu, defdir+name_data);
     */
 
     // define muon background sample
     std::vector<double> binsx2; // logE
     binsx2.push_back(2.6);
+    //binsx2.push_back(3.2);
     //binsx2.push_back(4);
     binsx2.push_back(4.778);
 
     std::vector<double> binsy2; // cosz (1 bin: all-sky)
-    binsy2.push_back(-1.0);
-    binsy2.push_back(1.0);
+    binsy2.push_back(-2.0);
+    binsy2.push_back(2.0);
 
     std::vector<double> binsz2; // ra (1 bin)
     binsz2.push_back(-10.);
@@ -87,8 +92,7 @@ void NuFit::analysis::create()
     // define numu control sample
     std::vector<double> binsx3;
     for (unsigned int i=0; i<12; ++i)
-    //for (unsigned int i=7; i<12; ++i)
-    //for (unsigned int i=7; i<12; ++i)
+    //for (unsigned int i=4; i<11; ++i)
          binsx3.push_back(2.6 + 0.2 * i);
 
     NuFit::hists analysis3("hybrid", binsx3, binsy2, binsz);
@@ -101,7 +105,7 @@ void NuFit::analysis::create()
 
     std::vector<NuFit::hists> analyses;
     analyses.push_back(analysis1);
-    //analyses.push_back(analysis11);
+    //analyses.push_back(analysis12);
     analyses.push_back(analysis2);
     analyses.push_back(analysis3);
 
@@ -122,7 +126,7 @@ void NuFit::analysis::create()
     }
 
     std::map<std::string, NuFit::interpolated_par *> systematics;
-    //
+    
     // start with dom efficiency
     std::string sysname_eff("dom_efficiency");
     NuFit::interpolated_par_domeff *domeff = new interpolated_par_domeff(sysname_eff, analysis_names, map_analyses);
@@ -147,13 +151,15 @@ void NuFit::analysis::create()
     std::string sysname_sv("selfveto");
     NuFit::interpolated_par_selfveto *selfveto = new interpolated_par_selfveto(sysname_sv, analysis_names, map_analyses);
 
-    // cosmicray
-    //std::string sysname_cosmicray("cosmicray");
-    //NuFit::interpolated_par_cosmicray *cosmicray = new interpolated_par_cosmicray(sysname_cosmicray, analysis_names, map_analyses);
     
     // hadronic interaction
     std::string sysname_hadronicinteraction("hadronicinteraction");
     NuFit::interpolated_par_hadronicinteraction *hadronicinteraction = new interpolated_par_hadronicinteraction(sysname_hadronicinteraction, analysis_names, map_analyses);
+
+    // cosmicray
+    //std::string sysname_cosmicray("cosmicray");
+    //NuFit::interpolated_par_cosmicray *cosmicray = new interpolated_par_cosmicray(sysname_cosmicray, analysis_names, map_analyses);
+
     // all objects in this map will be destroyed by model_base_sys later on
     systematics.insert(std::pair<std::string, NuFit::interpolated_par *> (sysname_eff, domeff));
     systematics.insert(std::pair<std::string, NuFit::interpolated_par *> (sysname_scat, scattering));
@@ -161,13 +167,13 @@ void NuFit::analysis::create()
     systematics.insert(std::pair<std::string, NuFit::interpolated_par *> (sysname_p0, holeicep0));
     systematics.insert(std::pair<std::string, NuFit::interpolated_par *> (sysname_p1, holeicep1));
     systematics.insert(std::pair<std::string, NuFit::interpolated_par *> (sysname_sv, selfveto));
-    //systematics.insert(std::pair<std::string, NuFit::interpolated_par *> (sysname_cosmicray, cosmicray));
     systematics.insert(std::pair<std::string, NuFit::interpolated_par *> (sysname_hadronicinteraction, hadronicinteraction));
+    //systematics.insert(std::pair<std::string, NuFit::interpolated_par *> (sysname_cosmicray, cosmicray));
     
     NuFit::model_base_sys *mymodel = new model_base_sys(analyses, astro, systematics, 10);
     model = mymodel; 
+
     // end of analysis code
-    
     std::cout << std::endl;
     std::cout << "... wrapping done" << std::endl; 
 }
@@ -184,6 +190,7 @@ double NuFit::analysis::get_likelihood(const double *pars)
 {
     // this is being minimized when stats class is used (interface to ROOT Minuit2)
     double neglogl = model->likelihood_say(pars);
+    //double neglogl = model->likelihood(pars);
     ++n_llh_evals;
 
     // add verbosity if requested
@@ -207,12 +214,14 @@ double NuFit::analysis::get_likelihood_gof(const double *pars)
 {
     // factor of 2 for Wilk's theorem
     return 2.0 * model->likelihood_gof_say(pars);
+    //return 2.0 * model->likelihood_gof(pars);
 }
 
 double NuFit::analysis::get_likelihood_abs(const double *pars)
 {
     // factor of 2 for Wilk's theorem
     return 2.0 * model->likelihood_abs_say(pars);
+    //return 2.0 * model->likelihood_abs(pars);
 }
 
 double NuFit::analysis::get_lnprob(boost::python::numeric::array pars_)
@@ -225,6 +234,7 @@ double NuFit::analysis::get_lnprob(boost::python::numeric::array pars_)
 
     // make log-likelihood positive
     return (-1.0) * model->likelihood_abs_say(pars); 
+    //return (-1.0) * model->likelihood_abs(pars); 
 }
 
 unsigned int NuFit::analysis::get_n_llh_evals() 
