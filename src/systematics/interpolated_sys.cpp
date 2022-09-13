@@ -345,6 +345,11 @@ double NuFit::interpolated_sys::get_efficiency_correction(const double &x, const
     // this function needs to be queried with k-1, l-1, m-1    
     
     //return correction_functions[component][binx][biny][binz].Eval(x);
+
+    //std::cout<<"componet"<<std::endl;
+    //std::cout<<component<<std::endl;
+    //std::cout<<"NuFit::interpolated_sys::get_efficiency_correction::k,l,m"<<std::endl;
+    //std::cout<<binx<<" "<<biny<<" "<<binz<<std::endl;
     
     double corr = correction_functions[component][binx][biny][binz].Eval(x);
 
