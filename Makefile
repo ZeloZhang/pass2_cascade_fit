@@ -15,13 +15,13 @@ OBJECTS_INJECT=$(SOURCES_INJECT:.cpp=.o)
 all: $(SOURCES) $(EXECUTABLE)
 
 inject: $(OBJECTS_INJECT)
-	   $(CC) $(OBJECTS_INJECT) -o $@ $(LDFLAGS) $(LIBS)
+	   $(CC) -pg $(OBJECTS_INJECT) -o $@ $(LDFLAGS) $(LIBS)
 
 $(EXECUTABLE): $(OBJECTS)
-	   $(CC) $(OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
+	   $(CC) -pg $(OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
 
 .cpp.o:
-	   $(CC) $(CFLAGS) $< -o $@
+	   $(CC) -pg $(CFLAGS) $< -o $@
 
 clean:
 	   rm ./*.o ./main src/*.o src/*/*.o
