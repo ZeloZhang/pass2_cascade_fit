@@ -54,59 +54,20 @@ int main(int argc, char **argv)
 	//NuFit::helpers::par_options selfveto("selfveto", 1000, 0, 5.0, 3000);
 	//NuFit::helpers::par_options oldsv("oldsv", 700, 50, 100, 5000);
     //NuFit::helpers::par_options cosmicray("cosmicray", 0, 0.01, -1, 2);
-    //NuFit::helpers::par_options hadronicinteraction("hadronicinteraction", 0, 0.01, -1, 2);
+    NuFit::helpers::par_options hadronicinteraction("hadronicinteraction", 0, 0.01, -1, 2);
 
-	/** .. package everything */
-	std::map<std::string, NuFit::helpers::par_options> options;
-	options.insert(std::pair<std::string, NuFit::helpers::par_options>(astro_norm.name, astro_norm));
-	options.insert(std::pair<std::string, NuFit::helpers::par_options>(astro_index.name, astro_index));
-	//options.insert(std::pair<std::string, NuFit::helpers::par_options>(energy_cut.name, energy_cut));
-	options.insert(std::pair<std::string, NuFit::helpers::par_options>(conv_norm.name, conv_norm));
-	options.insert(std::pair<std::string, NuFit::helpers::par_options>(muon_norm.name, muon_norm));
-	options.insert(std::pair<std::string, NuFit::helpers::par_options>(prompt_norm.name, prompt_norm));	
-	options.insert(std::pair<std::string, NuFit::helpers::par_options>(cr_index.name, cr_index));
-    options.insert(std::pair<std::string, NuFit::helpers::par_options>(dom_eff.name, dom_eff));
-    options.insert(std::pair<std::string, NuFit::helpers::par_options>(scattering.name, scattering));
-	options.insert(std::pair<std::string, NuFit::helpers::par_options>(absorption.name, absorption));
-	options.insert(std::pair<std::string, NuFit::helpers::par_options>(holeicep0.name, holeicep0));
-	options.insert(std::pair<std::string, NuFit::helpers::par_options>(holeicep1.name, holeicep1));
-	options.insert(std::pair<std::string, NuFit::helpers::par_options>(selfveto.name, selfveto));
-	//options.insert(std::pair<std::string, NuFit::helpers::par_options>(oldsv.name, oldsv));
-	//options.insert(std::pair<std::string, NuFit::helpers::par_options>(cosmicray.name, cosmicray));
-	//options.insert(std::pair<std::string, NuFit::helpers::par_options>(hadronicinteraction.name, hadronicinteraction));
-	/** .. and send to minimizer */
-	min.set_options(options);
-
-	/** write seed histograms */
-    /*
-	std::map<std::string, double> pars;
-	pars.insert(std::pair<std::string, double>(muon_norm.name, muon_norm.seed));
-	pars.insert(std::pair<std::string, double>(conv_norm.name, conv_norm.seed));
-	pars.insert(std::pair<std::string, double>(prompt_norm.name, prompt_norm.seed));
-	pars.insert(std::pair<std::string, double>(astro_norm.name, astro_norm.seed));
-	pars.insert(std::pair<std::string, double>(astro_index.name, astro_index.seed));
-	//pars.insert(std::pair<std::string, double>(energy_cut.name, energy_cut.seed));
-	pars.insert(std::pair<std::string, double>(cr_index.name, cr_index.seed));
-    pars.insert(std::pair<std::string, double>(dom_eff.name, dom_eff.seed));
-    pars.insert(std::pair<std::string, double>(scattering.name, scattering.seed));
-	pars.insert(std::pair<std::string, double>(absorption.name, absorption.seed));
-	pars.insert(std::pair<std::string, double>(holeicep0.name, holeicep0.seed));
-	pars.insert(std::pair<std::string, double>(holeicep1.name, holeicep1.seed));
-	pars.insert(std::pair<std::string, double>(selfveto.name, selfveto.seed));
-	//pars.insert(std::pair<std::string, double>(oldsv.name, oldsv.seed));
-    min.set_tolerance(1);
-    */
     int nsteps = 29;
-    double s_min = 100;
-    double s_max = 2900;
+    double s_min = 1;
+    double s_max = 3;
 
     //scan
-    NuFit::helpers::scan_options s("oldsv", nsteps, s_min, s_max);
+    NuFit::helpers::scan_options s("astro_norm", nsteps, s_min, s_max);
 
     std::map<std::string, NuFit::helpers::scan_options> scan_profile;
     scan_profile.insert(std::pair<std::string, NuFit::helpers::scan_options>(s.name, s));
 
     std::map<std::string, double> asimov_point;
+    /*
     asimov_point.insert(std::pair<std::string, double>(muon_norm.name, 1.5));
     asimov_point.insert(std::pair<std::string, double>(conv_norm.name, 1.0689));
     asimov_point.insert(std::pair<std::string, double>(prompt_norm.name, 0));
@@ -121,10 +82,25 @@ int main(int argc, char **argv)
     asimov_point.insert(std::pair<std::string, double>(selfveto.name, 1000.0));
     //asimov_point.insert(std::pair<std::string, double>(oldsv.name, 1000.0));
     //asimov_point.insert(std::pair<std::string, double>(cosmicray.name, 1.0));
-    //asimov_point.insert(std::pair<std::string, double>(hadronicinteraction.name, 1.0));
+    asimov_point.insert(std::pair<std::string, double>(hadronicinteraction.name, 0.0));
+    */
+
+    asimov_point.insert(std::pair<std::string, double>(muon_norm.name, 1.0));
+    asimov_point.insert(std::pair<std::string, double>(conv_norm.name, 1.0689));
+    asimov_point.insert(std::pair<std::string, double>(prompt_norm.name, 0));
+    asimov_point.insert(std::pair<std::string, double>(astro_norm.name, 1.66));
+    asimov_point.insert(std::pair<std::string, double>(astro_index.name, 2.53));
+    asimov_point.insert(std::pair<std::string, double>(dom_eff.name, 1.0));
+    asimov_point.insert(std::pair<std::string, double>(scattering.name, 1.0));
+    asimov_point.insert(std::pair<std::string, double>(absorption.name, 1.0));
+    asimov_point.insert(std::pair<std::string, double>(holeicep0.name, 0.0));
+    asimov_point.insert(std::pair<std::string, double>(holeicep1.name, 0.0));
+    asimov_point.insert(std::pair<std::string, double>(cr_index.name, 0.0));
+    asimov_point.insert(std::pair<std::string, double>(selfveto.name, 1000.0));
+    asimov_point.insert(std::pair<std::string, double>(hadronicinteraction.name, 0.0));
+    //asimov_point.insert(std::pair<std::string, double>(oldsv.name, 1000.0));
+    //asimov_point.insert(std::pair<std::string, double>(cosmicray.name, 1.0));
 
     min.scan_profile_llh_asimov(outdir+std::string("outfile_profile_llh_2d")+std::string(".txt"), scan_profile, outdir+std::string("injected_hist")+std::string(".root"), asimov_point);
-
-       
-        return 0;
+    return 0;
 }
