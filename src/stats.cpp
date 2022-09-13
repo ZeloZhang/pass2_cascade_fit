@@ -5,6 +5,7 @@ NuFit::stats::stats(NuFit::analysis &analysis_):
 	analysis( analysis_ )
 {
 	min = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad"); // supports all minimizers available via ROOT (including ROOT's interface to GSL minimizers). 
+	//min = ROOT::Math::Factory::CreateMinimizer("GSLMultiMin", "SteepestDescent"); // supports all minimizers available via ROOT (including ROOT's interface to GSL minimizers). 
 
 	min->SetFunction(target_func); // likelihood function without terms that have no parameter dependence	
 	min->SetMaxFunctionCalls(1000000); // ROOT default
@@ -42,7 +43,6 @@ void NuFit::stats::set_options(std::map<std::string, NuFit::helpers::par_options
 	analysis.get_par_names(names);
 
 	for(unsigned int i=0; i<npars; ++i) {
-		
 		// check wether parameter name exists in user options
 		if (opts.count(names[i])==0) {
 			std::cout << "!!! FATAL: parameter " << names[i] << " not found. Did you specify it correctly?" << std::endl;
@@ -531,13 +531,14 @@ void NuFit::stats::scan_profile_llh(std::string outfile, std::map<std::string, N
 		// user provided a valid parameter
 		indices.push_back(parameters.at(it->first));	
 
-                unsigned int nsteps = (it->second).nsteps;
-                double range_low = (it->second).range_low;
-                double range_high = (it->second).range_high;
+        unsigned int nsteps = (it->second).nsteps;
+        double range_low = (it->second).range_low;
+        double range_high = (it->second).range_high;
 
 		double stepsize = 0;
-		if (nsteps>1)
-                	stepsize = (range_high - range_low) / (nsteps-1);
+		if (nsteps>1){
+            stepsize = (range_high - range_low) / (nsteps-1);
+        }
 
 		// create axis
 		std::vector<double> axis;
@@ -624,7 +625,6 @@ void NuFit::stats::scan_profile_llh(std::string outfile, std::map<std::string, N
 			std::cout << "... " << n_evals << "/" << ncalls << " grid points done." << std::endl;
 			points.clear();
 		}
-			
 
 	} while (increment_loop_state(counters, bounds, loop_index, sizet));
 
@@ -896,12 +896,12 @@ void NuFit::stats::run_toyfits(std::string infile, std::string outfile, std::map
 
 	// check if all specified parameters are actually in the model
 
-        std::cout << "... start fitting " << nfits << " artificial toy datasets." << std::endl;
+    std::cout << "... start fitting " << nfits << " artificial toy datasets." << std::endl;
 
-        // need analysis names to obtain analysis names
-        std::vector<std::string> names = analysis.get_analysis_names();
+    // need analysis names to obtain analysis names
+    std::vector<std::string> names = analysis.get_analysis_names();
 
-        // save original data hists 
+    // save original data hists 
 	analysis.cache_data_hists();
 
 	// need to set up minimizer
@@ -912,8 +912,9 @@ void NuFit::stats::run_toyfits(std::string infile, std::string outfile, std::map
 	std::vector<std::string> par_names;
 	analysis.get_par_names(par_names);
 	std::map<std::string, double> point;
-	for(unsigned int i=0; i<par_names.size(); ++i) 
+	for(unsigned int i=0; i<par_names.size(); ++i){
 		point.insert(std::pair<std::string, double>(par_names[i], 0.0));
+    }
 	 
 	point.insert(std::pair<std::string, double>("llh", 0.0));
 	point.insert(std::pair<std::string, double>("fit_status", -1.0));
@@ -923,11 +924,12 @@ void NuFit::stats::run_toyfits(std::string infile, std::string outfile, std::map
 	std::vector<std::map<std::string, double>> points;
 	points.reserve(flush_rate);
 
-        // write header
-        file << "toy_id\t";
-        for(unsigned int i=0; i<par_names.size(); ++i)
-                file << par_names[i] << "\t";
-        file << "-2lnL\tfit_status" << std::endl;
+    // write header
+    file << "toy_id\t";
+    for(unsigned int i=0; i<par_names.size(); ++i){
+        file << par_names[i] << "\t";
+    }
+    file << "-2lnL\tfit_status" << std::endl;
 
 	// if randomize auxilliary data, need to read randomized experiments
 	std::vector< std::map<std::string, double> > aux_data;
@@ -950,23 +952,18 @@ void NuFit::stats::run_toyfits(std::string infile, std::string outfile, std::map
 				aux_pars.insert(std::pair<std::string, double>(var_names[i],0.0));
 
 			// now read data
-			
 			while(getline(thisfile_aux, line_aux)) {
-
 				std::stringstream ss1(line_aux);
 				double value[var_names.size()];
 				unsigned int col=0;
 				while (ss1 >> value[col]) col++; 
-				
 			 	if( col!=var_names.size() ) {
 			 	       	std::cout << "FATAL! unexpected number of columns!" << std::endl;
 			 	       	std::cout << "... exiting" << std::endl;
-
                          		//for(unsigned int i=0; i<ncols; ++i)
 			 	       	//                    std::cout << value[i] << " ";
 			 	       	exit(1);
 			 	}	
-					
 
 				for(unsigned int i=0; i<var_names.size(); ++i)	
 				{
@@ -974,14 +971,9 @@ void NuFit::stats::run_toyfits(std::string infile, std::string outfile, std::map
 					//std::cout << var_names[i] << ": " << value[i] << " ";
 				}
 				std::cout << std::endl;
-
-				
 				aux_data.push_back(aux_pars);
 			}				
-
-			
 		thisfile_aux.close();				
-			
 		}
 		else
 		{
@@ -1084,22 +1076,19 @@ void NuFit::stats::update_minimizer(const std::map<std::string, double> &pars)
 		}
 		indices.push_back(parameters.at(it->first));
 	}
-	
-
 
 	min->Clear();
-        for (unsigned int i=0; i<analysis.get_npars(); ++i)
-        {
-                // fix requested variables
-                if(std::find(indices.begin(), indices.end(), i) != indices.end())
-                { 
-                        min->SetFixedVariable(i, par_names[i].c_str(), pars.at(par_names[i])); 
-			std::cout << "... treating variable: " << par_names[i] << " with index " << i << " as constant." << std::endl;
-                }
-                else
-                        min->SetLimitedVariable(i, par_names[i].c_str(), seeds[i], stepsizes[i], limits_low[i], limits_high[i]);
-        }	
-
+    for (unsigned int i=0; i<analysis.get_npars(); ++i)
+    {
+        // fix requested variables
+        if(std::find(indices.begin(), indices.end(), i) != indices.end())
+        { 
+            min->SetFixedVariable(i, par_names[i].c_str(), pars.at(par_names[i])); 
+            std::cout << "... treating variable: " << par_names[i] << " with index " << i << " as constant." << std::endl;
+        }
+        else
+            min->SetLimitedVariable(i, par_names[i].c_str(), seeds[i], stepsizes[i], limits_low[i], limits_high[i]);
+    }	
 	return;
 }
 
