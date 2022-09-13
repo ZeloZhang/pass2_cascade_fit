@@ -218,7 +218,6 @@ void NuFit::model_base_sys::update_hists(const double *pars)
     double muon_norm = pars[0];
     double conv_norm = pars[1];
     double prompt_norm = pars[2];
-
     double delta_cr = pars[3];
 
     // adjust histograms according to parameter values
