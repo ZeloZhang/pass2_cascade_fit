@@ -1,7 +1,9 @@
+gmon.out
+*.txt
 /input*
 /output*
 /plot
-/submission
+/submission*
 result*.txt
 temp*
 *.o
