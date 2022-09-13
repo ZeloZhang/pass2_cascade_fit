@@ -185,15 +185,14 @@ double NuFit::model_base::likelihood_say(const double *pars){
                     alpha = expected*expected/sigmasq+1;
                     beta = expected/sigmasq;
                     logl = alpha*TMath::Log(beta)-((observed+alpha)*TMath::Log(1+beta))+TMath::LnGamma(alpha+observed)-TMath::LnGamma(alpha);
-                    //std::cout<<"logl"<<logl<<std::endl;
                     dataset.neglogl.SetBinContent(k+1,l+1,m+1,-logl);
 
 					neglogl -= logl;
                     /*
                     std::cout<<"expected"<<" "<<"observed"<<" "<<"sigmasq"<<std::endl;
                     std::cout<<expected<<" "<<observed<<" "<<sigmasq<<std::endl;
-                    std::cout<<"alpha"<<" "<<"beta"<<" "<<"neglogl"<<" "<<"lg1 lg2"<<std::endl;
-                    std::cout<<alpha<<" "<<beta<<" "<<neglogl<<" "<<lg1<<" "<<lg2<<std::endl;
+                    std::cout<<"alpha"<<" "<<"beta"<<" "<<"neglogl"<<" "<<std::endl;
+                    std::cout<<alpha<<" "<<beta<<" "<<neglogl<<std::endl;
                     */
 				}	
 			}
