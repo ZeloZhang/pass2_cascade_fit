@@ -50,8 +50,7 @@ namespace NuFit
 			void create_correction_functions(bool use_interpolation=false);
 			//void create_correction_functions();
 			double get_efficiency_correction(const double &x, const std::string &component, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz);
-		
-
+			double get_relative_correction_error(const double &x, const std::string &component, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz);
 
 		private:	
 			void fill_hists();
@@ -63,6 +62,8 @@ namespace NuFit
 			
 		
 			std::unordered_map<std::string, std::vector<std::vector<std::vector<TF1>>>> correction_functions; // for faster access to fit functions (by selection for flavor)
+			std::unordered_map<std::string, std::vector<std::vector<std::vector<TFitResultPtr>>>> correction_fit_results; // for faster access to correction fit results and confidence intervals (by selection for flavor)
+			std::unordered_map<std::string, std::vector<std::vector<std::vector<double>>>> correction_errors; // for faster access to correction error (by selection for flavor)
 			// total number of nested vector elements are NbinsX * NbinsY & NbinsZ
 			std::vector<std::vector<std::vector<bool>>> success_conv; // len is number of bins
 			std::vector<std::vector<std::vector<bool>>> success_prompt; // to keep track of fit status in each bin

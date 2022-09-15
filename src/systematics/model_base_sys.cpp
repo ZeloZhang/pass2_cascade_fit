@@ -539,6 +539,20 @@ double NuFit::model_base_sys::get_efficiency_correction(const double *pars, cons
     return efficiency_correction;
 }
 
+double NuFit::model_base_sys::get_relative_correction_error_sq(const double *pars, const std::string& dataset_name, const std::string &flavor, const std::string &component, const unsigned int binx, const unsigned int biny, const unsigned int binz){
+    double relative_correction_error = 0.0;
+    // loop through parameters
+    for (std::unordered_map<std::string, NuFit::interpolated_par *>::const_iterator it = systematics_interp.begin(); it != systematics_interp.end(); ++it)
+    {
+        // find parameter index
+        unsigned int par_index = parameters[it->first];
+        double par_value = pars[par_index];
+        temp_relative_correction_error = (it->second)->get_relative_correction_error(par_value, dataset_name, flavor, component, binx, biny, binz);
+        relative_correction_error_sq += relative_correction_error * relative_correction_error;
+    }
+    return relative_correction_error_sq;
+}
+
 void NuFit::model_base_sys::update_sum() 
 {
     // sum components

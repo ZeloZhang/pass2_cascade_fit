@@ -113,9 +113,10 @@ void NuFit::analysis::create()
     NuFit::astro_model_single_plaw *astro = new astro_model_single_plaw();
     //NuFit::astro_model_plaw_singlep *astro = new astro_model_plaw_singlep();
     //base_model needs to know the input data as well as the astro model
-    //NuFit::model_base *mymodel = new model_base(analyses, astro);
-    //model = mymodel;
+    NuFit::model_base *mymodel = new model_base(analyses, astro);
+    model = mymodel;
     
+    /*
     // comment out code below if you don't need systematics        
     std::vector<std::string> analysis_names;
     std::map<std::string, NuFit::hists*> map_analyses;
@@ -172,6 +173,7 @@ void NuFit::analysis::create()
     
     NuFit::model_base_sys *mymodel = new model_base_sys(analyses, astro, systematics, 10);
     model = mymodel; 
+    */
 
     // end of analysis code
     std::cout << std::endl;

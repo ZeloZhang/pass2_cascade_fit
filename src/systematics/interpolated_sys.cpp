@@ -94,6 +94,24 @@ void NuFit::interpolated_sys::create_correction_functions(bool use_interpolation
     correction_functions["Prompt"].resize(dataset.get_nbinsx(), std::vector<std::vector<TF1>>(dataset.get_nbinsy(), std::vector<TF1>(dataset.get_nbinsz())));
     correction_functions["Astro"].resize(dataset.get_nbinsx(), std::vector<std::vector<TF1>>(dataset.get_nbinsy(), std::vector<TF1>(dataset.get_nbinsz())));
 
+    std::vector<std::vector<std::vector<TFitResultPtr>>> vec2;
+    correction_fit_results.insert(std::pair<std::string, std::vector<std::vector<std::vector<TFitResultPtr>>>> ("Conv", vec2));
+    correction_fit_results.insert(std::pair<std::string, std::vector<std::vector<std::vector<TFitResultPtr>>>> ("Prompt", vec2));
+    correction_fit_results.insert(std::pair<std::string, std::vector<std::vector<std::vector<TFitResultPtr>>>> ("astro", vec2));
+
+    correction_fit_results["Conv"].resize(dataset.get_nbinsx(), std::vector<std::vector<TFitResultPtr>>(dataset.get_nbinsy(), std::vector<TFitResultPtr>(dataset.get_nbinsz())));
+    correction_fit_results["Prompt"].resize(dataset.get_nbinsx(), std::vector<std::vector<TFitResultPtr>>(dataset.get_nbinsy(), std::vector<TFitResultPtr>(dataset.get_nbinsz())));
+    correction_fit_results["Astro"].resize(dataset.get_nbinsx(), std::vector<std::vector<TFitResultPtr>>(dataset.get_nbinsy(), std::vector<TFitResultPtr>(dataset.get_nbinsz())));
+
+    std::vector<std::vector<std::vector<double>>> vec3;
+    correction_errors.insert(std::pair<std::string, std::vector<std::vector<std::vector<double>>>> ("Conv", vec3));
+    correction_errors.insert(std::pair<std::string, std::vector<std::vector<std::vector<double>>>> ("Prompt", vec3));
+    correction_errors.insert(std::pair<std::string, std::vector<std::vector<std::vector<double>>>> ("astro", vec3));
+
+    correction_errors["Conv"].resize(dataset.get_nbinsx(), std::vector<std::vector<double>>(dataset.get_nbinsy(), std::vector<double>(dataset.get_nbinsz())));
+    correction_errors["Prompt"].resize(dataset.get_nbinsx(), std::vector<std::vector<double>>(dataset.get_nbinsy(), std::vector<double>(dataset.get_nbinsz())));
+    correction_errors["Astro"].resize(dataset.get_nbinsx(), std::vector<std::vector<double>>(dataset.get_nbinsy(), std::vector<double>(dataset.get_nbinsz())));
+
     success_conv.resize(dataset.get_nbinsx(), std::vector<std::vector<bool>>(dataset.get_nbinsy(), std::vector<bool>(dataset.get_nbinsz())));
     success_prompt.resize(dataset.get_nbinsx(), std::vector<std::vector<bool>>(dataset.get_nbinsy(), std::vector<bool>(dataset.get_nbinsz())));
     success_astro.resize(dataset.get_nbinsx(), std::vector<std::vector<bool>>(dataset.get_nbinsy(), std::vector<bool>(dataset.get_nbinsz())));
@@ -242,9 +260,16 @@ void NuFit::interpolated_sys::create_fit(const double &baseline_val, const doubl
             else{
                 // data to be interpolated/fitted
                 TGraphErrors graph(ratios.size(), &(vals[0]), &(ratios[0]), &(vals_err[0]), &(ratios_err[0]));
-                int status = graph.Fit(&fitfunc, "Quiet");        
-                if ((status==0) && ((fitfunc.GetProb() > 0.001) || (fitfunc.GetNDF()==0))) correction_functions[component][k][l][m]=fitfunc;
-                else valid_point = false;
+                int status = graph.Fit(&fitfunc, "QS");        
+                if ((int(status)==0) && ((fitfunc.GetProb() > 0.001) || (fitfunc.GetNDF()==0)))
+                {
+                    correction_functions[component][k][l][m]=fitfunc;
+                    correction_fit_results[component][k][l][m]=status;
+                }
+                else 
+                {
+                    valid_point = false;
+                }
 
                 // some plotting functions 
                 // need all points (also baseline)
@@ -363,3 +388,28 @@ double NuFit::interpolated_sys::get_efficiency_correction(const double &x, const
 }
 
 
+double NuFit::interpolated_sys::get_relative_correction_error(const double &x, const std::string &component, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz) {
+    // root histograms use range 1 to N to index bins
+    // but correction factors are stored in array of 0 to N-1
+    // if you are interested in correction for ROOT histogram bin k, l, m
+    // this function needs to be queried with k-1, l-1, m-1    
+    
+    double corr = correction_functions[component][binx][biny][binz].Eval(x);
+    if((corr>0.1)&&(corr<2.0))
+        corr = corr;
+    else if(corr<=0.1)
+        corr = 0.1;
+    else
+        corr = 2.0;
+
+    double sigma[1];
+    double xx[1];
+    xx[0] = x;
+    correction_fit_results[component][binx][biny][binz]->GetConfidenceIntervals(1,1,1,xx,sigma,0.68);
+
+    double relative_correction_error = sigma[0]/corr;
+
+    return relative_correction_error;
+
+
+}

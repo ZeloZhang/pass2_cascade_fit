@@ -61,6 +61,7 @@ namespace NuFit
 			void update_hists(const double *pars);
 			void update_sigmasq(const double *astro_pars, const double *pars);
             double get_efficiency_correction(const double *pars, const std::string &dataset_name, const std::string &flavor, const std::string &component, const unsigned int binx, const unsigned int biny, const unsigned int binz);
+            double relative_correction_error_sq(const double *pars, const std::string &dataset_name, const std::string &flavor, const std::string &component, const unsigned int binx, const unsigned int biny, const unsigned int binz);
 			void update_bincorrections(const double *pars);	
 			void update_sum();
 
