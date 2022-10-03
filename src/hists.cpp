@@ -5,7 +5,7 @@ NuFit::hists::hists(std::string name, std::vector<double> userbins_x, std::vecto
 	  atm_prompt((name+std::string("_all_prompt")).c_str(), (name+std::string("_all_prompt")).c_str(), userbins_x.size()-1, &(userbins_x[0]), userbins_y.size()-1, &(userbins_y[0]), userbins_z.size()-1, &(userbins_z[0])), 
 	  astro((name+std::string("_all_astro")).c_str(), (name+std::string("_all_astro")).c_str(), userbins_x.size()-1, &(userbins_x[0]), userbins_y.size()-1, &(userbins_y[0]), userbins_z.size()-1, &(userbins_z[0])),
 	  mcsum((name+std::string("_mcsum")).c_str(), (name+std::string("_mcsum")).c_str(), userbins_x.size()-1, &(userbins_x[0]), userbins_y.size()-1, &(userbins_y[0]), userbins_z.size()-1, &(userbins_z[0])), 
-	  sigmasq((name+std::string("_sigmasq")).c_str(), (name+std::string("_sigmasq")).c_str(), userbins_x.size()-1, &(userbins_x[0]), userbins_y.size()-1, &(userbins_y[0]), userbins_z.size()-1, &(userbins_z[0])), 
+	  sigma((name+std::string("_sigma")).c_str(), (name+std::string("_sigma")).c_str(), userbins_x.size()-1, &(userbins_x[0]), userbins_y.size()-1, &(userbins_y[0]), userbins_z.size()-1, &(userbins_z[0])), 
 	  gof((name+std::string("_gof")).c_str(), (name+std::string("_gof")).c_str(), userbins_x.size()-1, &(userbins_x[0]), userbins_y.size()-1, &(userbins_y[0]), userbins_z.size()-1, &(userbins_z[0])), 
 	  neglogl((name+std::string("_neglogl")).c_str(), (name+std::string("_neglogl")).c_str(), userbins_x.size()-1, &(userbins_x[0]), userbins_y.size()-1, &(userbins_y[0]), userbins_z.size()-1, &(userbins_z[0])), 
 	 
@@ -220,29 +220,59 @@ double NuFit::hists::get_bincontent(const std::string &hist_class, const std::st
 	    	if (!component.compare("Conv"))
 	    		bincontent = nue.conv.GetBinContent(binx, biny, binz);
 	    	else if (!component.compare("Prompt"))
-	    		bincontent = nue.prompt.GetBinContent(binx, biny, binz);
+	    	    bincontent = nue.prompt.GetBinContent(binx, biny, binz);
 	    	else if (!component.compare("Astro"))
-            		bincontent = nue.astro.GetBinContent(binx, biny, binz);
+                bincontent = nue.astro.GetBinContent(binx, biny, binz);
 	    }
 	    else if (!flavor.compare("NuMu"))
 	    {
 	    	//bincontent = numu_components[component]->GetBinContent(binx, biny, binz);
-	            if (!component.compare("Conv"))
-                            bincontent = numu.conv.GetBinContent(binx, biny, binz);
-                    else if (!component.compare("Prompt"))
-                            bincontent = numu.prompt.GetBinContent(binx, biny, binz);
-                    else if (!component.compare("Astro"))
-                            bincontent = numu.astro.GetBinContent(binx, biny, binz);	
+	        if (!component.compare("Conv"))
+                bincontent = numu.conv.GetBinContent(binx, biny, binz);
+            else if (!component.compare("Prompt"))
+                bincontent = numu.prompt.GetBinContent(binx, biny, binz);
+            else if (!component.compare("Astro"))
+                bincontent = numu.astro.GetBinContent(binx, biny, binz);	
 	    }
 	    else if (!flavor.compare("NuTau"))
 	    {
 	    	//bincontent = nutau_components[component]->GetBinContent(binx, biny, binz);
-                    if (!component.compare("Conv"))
-                            bincontent = nutau.conv.GetBinContent(binx, biny, binz);
-                    else if (!component.compare("Prompt"))
-                            bincontent = nutau.prompt.GetBinContent(binx, biny, binz);
-                    else if (!component.compare("Astro"))
-                            bincontent = nutau.astro.GetBinContent(binx, biny, binz);
+            if (!component.compare("Conv"))
+                bincontent = nutau.conv.GetBinContent(binx, biny, binz);
+            else if (!component.compare("Prompt"))
+                bincontent = nutau.prompt.GetBinContent(binx, biny, binz);
+            else if (!component.compare("Astro"))
+                bincontent = nutau.astro.GetBinContent(binx, biny, binz);
+	    }
+    }
+    else if (!hist_class.compare("error"))
+    {
+	    if (!flavor.compare("NuE"))
+	    {
+	    	if (!component.compare("Conv"))
+	    		bincontent = nue.conv.GetBinError(binx, biny, binz);
+	    	else if (!component.compare("Prompt"))
+	    		bincontent = nue.prompt.GetBinError(binx, biny, binz);
+	    	else if (!component.compare("Astro"))
+            		bincontent = nue.astro.GetBinError(binx, biny, binz);
+	    }
+	    else if (!flavor.compare("NuMu"))
+	    {
+	        if (!component.compare("Conv"))
+                bincontent = numu.conv.GetBinError(binx, biny, binz);
+            else if (!component.compare("Prompt"))
+                bincontent = numu.prompt.GetBinError(binx, biny, binz);
+            else if (!component.compare("Astro"))
+                bincontent = numu.astro.GetBinError(binx, biny, binz);	
+	    }
+	    else if (!flavor.compare("NuTau"))
+	    {
+            if (!component.compare("Conv"))
+                bincontent = nutau.conv.GetBinError(binx, biny, binz);
+            else if (!component.compare("Prompt"))
+                bincontent = nutau.prompt.GetBinError(binx, biny, binz);
+            else if (!component.compare("Astro"))
+                bincontent = nutau.astro.GetBinError(binx, biny, binz);
 	    }
     }
     else if (!hist_class.compare("correction"))
@@ -255,27 +285,27 @@ double NuFit::hists::get_bincontent(const std::string &hist_class, const std::st
 	    	else if (!component.compare("Prompt"))
 	    		bincontent = nue.prompt_efficiency_correction.GetBinContent(binx, biny, binz);
 	    	else if (!component.compare("Astro"))
-            		bincontent = nue.astro_efficiency_correction.GetBinContent(binx, biny, binz);
+                bincontent = nue.astro_efficiency_correction.GetBinContent(binx, biny, binz);
 	    }
 	    else if (!flavor.compare("NuMu"))
 	    {
 	    	//bincontent = numu_components[component]->GetBinContent(binx, biny, binz);
-	            if (!component.compare("Conv"))
-                            bincontent = numu.conv_efficiency_correction.GetBinContent(binx, biny, binz);
-                    else if (!component.compare("Prompt"))
-                            bincontent = numu.prompt_efficiency_correction.GetBinContent(binx, biny, binz);
-                    else if (!component.compare("Astro"))
-                            bincontent = numu.astro_efficiency_correction.GetBinContent(binx, biny, binz);	
+	        if (!component.compare("Conv"))
+                bincontent = numu.conv_efficiency_correction.GetBinContent(binx, biny, binz);
+            else if (!component.compare("Prompt"))
+                bincontent = numu.prompt_efficiency_correction.GetBinContent(binx, biny, binz);
+            else if (!component.compare("Astro"))
+                bincontent = numu.astro_efficiency_correction.GetBinContent(binx, biny, binz);	
 	    }
 	    else if (!flavor.compare("NuTau"))
 	    {
 	    	//bincontent = nutau_components[component]->GetBinContent(binx, biny, binz);
-                    if (!component.compare("Conv"))
-                            bincontent = nutau.conv_efficiency_correction.GetBinContent(binx, biny, binz);
-                    else if (!component.compare("Prompt"))
-                            bincontent = nutau.prompt_efficiency_correction.GetBinContent(binx, biny, binz);
-                    else if (!component.compare("Astro"))
-                            bincontent = nutau.astro_efficiency_correction.GetBinContent(binx, biny, binz);
+            if (!component.compare("Conv"))
+                bincontent = nutau.conv_efficiency_correction.GetBinContent(binx, biny, binz);
+            else if (!component.compare("Prompt"))
+                bincontent = nutau.prompt_efficiency_correction.GetBinContent(binx, biny, binz);
+            else if (!component.compare("Astro"))
+                bincontent = nutau.astro_efficiency_correction.GetBinContent(binx, biny, binz);
 	    }
 
     }
@@ -296,66 +326,96 @@ void NuFit::hists::set_bincontent(const std::string &hist_class, const std::stri
     {    
         if (!flavor.compare("NuE"))
         {
-		//nue_components[component]->SetBinContent(binx, biny, binz, value);
-                if (!component.compare("Conv"))
-                        nue.conv.SetBinContent(binx, biny, binz, value);
-                else if (!component.compare("Prompt"))
-                        nue.prompt.SetBinContent(binx, biny, binz, value);
-                else if (!component.compare("Astro"))
-                        nue.astro.SetBinContent(binx, biny, binz, value);
+		    //nue_components[component]->SetBinContent(binx, biny, binz, value);
+            if (!component.compare("Conv"))
+                nue.conv.SetBinContent(binx, biny, binz, value);
+            else if (!component.compare("Prompt"))
+                nue.prompt.SetBinContent(binx, biny, binz, value);
+            else if (!component.compare("Astro"))
+                nue.astro.SetBinContent(binx, biny, binz, value);
         }
         else if (!flavor.compare("NuMu"))
         {
-		//numu_components[component]->SetBinContent(binx, biny, binz, value);
-                if (!component.compare("Conv"))
-                        numu.conv.SetBinContent(binx, biny, binz, value);
-                else if (!component.compare("Prompt"))
-                        numu.prompt.SetBinContent(binx, biny, binz, value);
-                else if (!component.compare("Astro"))
-                         numu.astro.SetBinContent(binx, biny, binz, value);
+	    	//numu_components[component]->SetBinContent(binx, biny, binz, value);
+            if (!component.compare("Conv"))
+                numu.conv.SetBinContent(binx, biny, binz, value);
+            else if (!component.compare("Prompt"))
+                numu.prompt.SetBinContent(binx, biny, binz, value);
+            else if (!component.compare("Astro"))
+                numu.astro.SetBinContent(binx, biny, binz, value);
         }
         else if (!flavor.compare("NuTau"))
         {
-		//nutau_components[component]->SetBinContent(binx, biny, binz, value);
-                if (!component.compare("Conv"))
-                        nutau.conv.SetBinContent(binx, biny, binz, value);
-                else if (!component.compare("Prompt"))
-                        nutau.prompt.SetBinContent(binx, biny, binz, value);
-                else if (!component.compare("Astro"))
-                        nutau.astro.SetBinContent(binx, biny, binz, value);
+	    	//nutau_components[component]->SetBinContent(binx, biny, binz, value);
+            if (!component.compare("Conv"))
+                nutau.conv.SetBinContent(binx, biny, binz, value);
+            else if (!component.compare("Prompt"))
+                nutau.prompt.SetBinContent(binx, biny, binz, value);
+            else if (!component.compare("Astro"))
+                nutau.astro.SetBinContent(binx, biny, binz, value);
+        }	
+    }
+    else if (!hist_class.compare("error"))
+    {    
+        if (!flavor.compare("NuE"))
+        {
+            if (!component.compare("Conv"))
+                nue.conv.SetBinError(binx, biny, binz, value);
+            else if (!component.compare("Prompt"))
+                nue.prompt.SetBinError(binx, biny, binz, value);
+            else if (!component.compare("Astro"))
+                nue.astro.SetBinError(binx, biny, binz, value);
+        }
+        else if (!flavor.compare("NuMu"))
+        {
+            if (!component.compare("Conv"))
+                numu.conv.SetBinError(binx, biny, binz, value);
+            else if (!component.compare("Prompt"))
+                numu.prompt.SetBinError(binx, biny, binz, value);
+            else if (!component.compare("Astro"))
+                numu.astro.SetBinError(binx, biny, binz, value);
+        }
+        else if (!flavor.compare("NuTau"))
+        {
+            if (!component.compare("Conv"))
+                nutau.conv.SetBinError(binx, biny, binz, value);
+            else if (!component.compare("Prompt"))
+                nutau.prompt.SetBinError(binx, biny, binz, value);
+            else if (!component.compare("Astro"))
+                nutau.astro.SetBinError(binx, biny, binz, value);
         }	
     }
     else if (!hist_class.compare("correction")) 
     {
         if (!flavor.compare("NuE"))
         {
-		//nue_components[component]->SetBinContent(binx, biny, binz, value);
-                if (!component.compare("Conv"))
-                        nue.conv_efficiency_correction.SetBinContent(binx, biny, binz, value);
-                else if (!component.compare("Prompt"))
-                        nue.prompt_efficiency_correction.SetBinContent(binx, biny, binz, value);
-                else if (!component.compare("Astro"))
-                        nue.astro_efficiency_correction.SetBinContent(binx, biny, binz, value);
+	    	//nue_components[component]->SetBinContent(binx, biny, binz, value);
+            if (!component.compare("Conv"))
+                nue.conv_efficiency_correction.SetBinContent(binx, biny, binz, value);
+            else if (!component.compare("Prompt"))
+                nue.prompt_efficiency_correction.SetBinContent(binx, biny, binz, value);
+            else if (!component.compare("Astro"))
+                nue.astro_efficiency_correction.SetBinContent(binx, biny, binz, value);
         }
         else if (!flavor.compare("NuMu"))
         {
-		//numu_components[component]->SetBinContent(binx, biny, binz, value);
-                if (!component.compare("Conv"))
-                        numu.conv_efficiency_correction.SetBinContent(binx, biny, binz, value);
-                else if (!component.compare("Prompt"))
-                        numu.prompt_efficiency_correction.SetBinContent(binx, biny, binz, value);
-                else if (!component.compare("Astro"))
-                         numu.astro_efficiency_correction.SetBinContent(binx, biny, binz, value);
+	    	//numu_components[component]->SetBinContent(binx, biny, binz, value);
+            if (!component.compare("Conv"))
+                numu.conv_efficiency_correction.SetBinContent(binx, biny, binz, value);
+            else if (!component.compare("Prompt"))
+                numu.prompt_efficiency_correction.SetBinContent(binx, biny, binz, value);
+            else if (!component.compare("Astro"))
+                numu.astro_efficiency_correction.SetBinContent(binx, biny, binz, value);
         }
         else if (!flavor.compare("NuTau"))
         {
-		//nutau_components[component]->SetBinContent(binx, biny, binz, value);
-                if (!component.compare("Conv"))
-                        nutau.conv_efficiency_correction.SetBinContent(binx, biny, binz, value);
-                else if (!component.compare("Prompt"))
-                        nutau.prompt_efficiency_correction.SetBinContent(binx, biny, binz, value);
-                else if (!component.compare("Astro"))
-                        nutau.astro_efficiency_correction.SetBinContent(binx, biny, binz, value);
+		    //nutau_components[component]->SetBinContent(binx, biny, binz, value);
+            if (!component.compare("Conv"))
+                nutau.conv_efficiency_correction.SetBinContent(binx, biny, binz, value);
+            else if (!component.compare("Prompt"))
+                nutau.prompt_efficiency_correction.SetBinContent(binx, biny, binz, value);
+            else if (!component.compare("Astro"))
+                nutau.astro_efficiency_correction.SetBinContent(binx, biny, binz, value);
         }
     }
     else

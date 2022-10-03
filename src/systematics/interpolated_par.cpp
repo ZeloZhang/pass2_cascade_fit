@@ -57,6 +57,30 @@ double NuFit::interpolated_par::get_efficiency_correction(const double &x, const
     return 1.0; // should never be reached
 }
 
+double NuFit::interpolated_par::get_efficiency_correction_error(const double &x, const std::string &analysis_name, const std::string &flavor, const std::string &component, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz)
+{
+    // flavor: NuE, NuMu, NuTau
+    // component: Conv, Prompt, Astro, Muon
+    
+    // per bin fits for analysis
+    std::unordered_map<std::string, NuFit::interpolated_sys *> &analysis = binfits[analysis_name];
+
+    // first find flavor for analysis
+    std::unordered_map<std::string, NuFit::interpolated_sys *>::const_iterator it = analysis.find(flavor);
+
+    // if not found then this systematic does not effect this flavor 
+    if (it == analysis.end()) return 0.0;
+        // eventually need to work in effect on muon background
+    else 
+    {
+        // need to find correction factor for component 
+        // check if component is actually effected by this systematic
+        if (std::find(components.begin(), components.end(), component) != components.end()) return analysis[flavor]->get_efficiency_correction_error(x, component, binx, biny, binz);
+        else return 0.0;
+    }
+    return 0.0; // should never be reached
+}
+
 double NuFit::interpolated_par::get_efficiency_correction_muon(const double &x, const std::string &analysis_name, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz)
 {
     // this will currently map onto neutrino systematics (since we don't have muon background systematics simulation. will assume a soft spectrum for the computation

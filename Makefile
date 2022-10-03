@@ -6,16 +6,24 @@ LDIR=/data/user/zzhang1/ROOT/build/lib/
 LIBS=-lMathMore
 SOURCES=main.cpp $(wildcard src/*.cpp) $(wildcard src/systematics/*.cpp) $(wildcard src/models/*.cpp) $(wildcard src/bootstrap/*.cpp)
 SOURCES_INJECT=inject.cpp $(wildcard src/*.cpp) $(wildcard src/systematics/*.cpp) $(wildcard src/models/*.cpp) $(wildcard src/bootstrap/*.cpp)
+SOURCES_TRY=try.cpp
+
 OBJECTS=$(SOURCES:.cpp=.o)
 	EXECUTABLE=main
 
 OBJECTS_INJECT=$(SOURCES_INJECT:.cpp=.o)
     EXECUTABLE_INJECT=inject
 
+OBJECTS_TRY=$(SOURCES_TRY:.cpp=.o)
+	EXECUTABLE_TRY=try
+
 all: $(SOURCES) $(EXECUTABLE)
 
 inject: $(OBJECTS_INJECT)
 	   $(CC) -pg $(OBJECTS_INJECT) -o $@ $(LDFLAGS) $(LIBS)
+
+try: $(OBJECTS_TRY)
+	$(CC) -pg $(OBJECTS_TRY) -o $@ $(LDFLAGS) $(LIBS)
 
 $(EXECUTABLE): $(OBJECTS)
 	   $(CC) -pg $(OBJECTS) -o $@ $(LDFLAGS) $(LIBS)

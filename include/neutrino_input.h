@@ -33,7 +33,7 @@ namespace NuFit
 			TH3D conv; // histogram of observables. changes during fitting.
 			TH3D prompt; // histogram of observables. changes during fitting.
 			TH3D astro; // histogram of observables. changes during fitting.
-			TH3D sigmasq; // histogram of observables. changes during fitting.
+			TH3D sigma; // histogram of observables. changes during fitting.
 			TH3D conv_efficiency_correction;
 			TH3D prompt_efficiency_correction;
 			TH3D astro_efficiency_correction;

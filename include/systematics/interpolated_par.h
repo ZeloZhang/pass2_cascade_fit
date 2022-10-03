@@ -30,6 +30,7 @@ namespace NuFit
 			interpolated_par(std::string par_name_, std::vector<std::string> analysis_names_);
 			virtual ~interpolated_par();
 			double get_efficiency_correction(const double &x, const std::string &analysis_name, const std::string &flavor, const std::string &component, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz);
+			double get_efficiency_correction_error(const double &x, const std::string &analysis_name, const std::string &flavor, const std::string &component, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz);
 			double get_efficiency_correction_muon(const double &x, const std::string &analysis_name, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz);
 
 		protected:

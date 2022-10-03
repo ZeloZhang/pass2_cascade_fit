@@ -73,13 +73,13 @@ void NuFit::model_base::store_parameters()
                 hist_ptrs.push_back(&dataset.atm_prompt);
                 hist_ptrs.push_back(&dataset.data.hist);
                 hist_ptrs.push_back(&dataset.mcsum);
-                hist_ptrs.push_back(&dataset.sigmasq);
+                hist_ptrs.push_back(&dataset.sigma);
                 hist_ptrs.push_back(&dataset.gof);
                 hist_ptrs.push_back(&dataset.neglogl);
-                hist_ptrs.push_back(&dataset.nue.sigmasq);
-                hist_ptrs.push_back(&dataset.numu.sigmasq);
-                hist_ptrs.push_back(&dataset.nutau.sigmasq);
-                hist_ptrs.push_back(&dataset.muon.sigmasq);
+                hist_ptrs.push_back(&dataset.nue.sigma);
+                hist_ptrs.push_back(&dataset.numu.sigma);
+                hist_ptrs.push_back(&dataset.nutau.sigma);
+                hist_ptrs.push_back(&dataset.muon.sigma);
 
 		input_indices.insert(std::pair<std::string, unsigned int>(dataset.name, i));
         }
@@ -167,6 +167,7 @@ double NuFit::model_base::likelihood_say(const double *pars){
 
 		double observed = 0.0;
 		double expected = 0.0;
+        double sigma = 0.0;
         double sigmasq = 0.0;
         double alpha = 0.0;
         double beta = 0.0;
@@ -178,13 +179,24 @@ double NuFit::model_base::likelihood_say(const double *pars){
 					// ROOT convention: bin indices run from 1 to N
 					expected = dataset.mcsum.GetBinContent(k+1, l+1, m+1);
 					observed = dataset.data.hist.GetBinContent(k+1, l+1, m+1);
-                    sigmasq = dataset.sigmasq.GetBinContent(k+1, l+1, m+1);
+                    sigma = dataset.sigma.GetBinContent(k+1, l+1, m+1);
+                    sigmasq = sigma*sigma;
 					if (expected<1.e-20) // assume bin contents to be non-zero
 						expected = 1.e-20 ;
 
                     alpha = expected*expected/sigmasq+1;
                     beta = expected/sigmasq;
                     logl = alpha*TMath::Log(beta)-((observed+alpha)*TMath::Log(1+beta))+TMath::LnGamma(alpha+observed)-TMath::LnGamma(alpha);
+                    //std::cout<<"analysis name:"<<dataset.name<<std::endl;
+                    //std::cout<<"k l m: "<< k << l << m <<std::endl;
+                    //std::cout<<"sigmasq:"<<sigmasq<<std::endl;
+                    //std::cout<<"sigma:"<<sigma<<std::endl;
+                    //std::cout<<"observed"<<observed<<std::endl;
+                    //std::cout<<"expected"<<expected<<std::endl;
+                    //std::cout<<"alpha:"<<alpha<<std::endl;
+                    //std::cout<<"beta:"<<beta<<std::endl;
+                    //std::cout<<"logl:"<<logl<<std::endl;
+
                     dataset.neglogl.SetBinContent(k+1,l+1,m+1,-logl);
 
 					neglogl -= logl;
@@ -203,6 +215,7 @@ double NuFit::model_base::likelihood_say(const double *pars){
 		for(unsigned int i=0; i<npars; ++i) std::cout << "parameter " << i << ":" << pars[i] << std::endl;
 		exit( 1 );
 	}
+    //std::cout<<"neglogl: "<<neglogl << std::endl;
 	return neglogl;
 }
 
@@ -231,6 +244,7 @@ double NuFit::model_base::likelihood_gof_say(double neglogl)
         dataset.gof.Reset();
 
         double observed = 0.0;
+        double sigma = 0.0;
         double sigmasq = 0.0;
         double alpha = 0.0;
         double beta = 0.0;
@@ -241,7 +255,9 @@ double NuFit::model_base::likelihood_gof_say(double neglogl)
 		        	// ROOT convention: bin indices run from 1 to N
 		        	observed = dataset.data.hist.GetBinContent(k+1, l+1, m+1);
                     if (observed) {
-                        sigmasq = dataset.sigmasq.GetBinContent(k+1, l+1, m+1);
+                        //sigma = dataset.sigma.GetBinContent(k+1, l+1, m+1);
+                        sigma = 0;
+                        sigmasq = sigma*sigma;
                         alpha = observed*observed/sigmasq+1;
                         beta = observed/sigmasq;
 
@@ -452,7 +468,7 @@ void NuFit::model_base::update_hists(const double *pars)
 	update_astro(astro_pars);
 	update_atmospherics(pars);	
 	update_sum();
-	update_sigmasq(astro_pars,pars);
+	update_sigma(astro_pars,pars);
 
 }
 
@@ -510,7 +526,7 @@ void NuFit::model_base::update_sum()
 	return;
 }
 
-void NuFit::model_base::update_sigmasq(const double *astro_pars, const double *pars)
+void NuFit::model_base::update_sigma(const double *astro_pars, const double *pars)
 {
 	// adjust histograms according to parameter values
 	// this needs to be performed on each dataset that enters the likelihood
@@ -523,51 +539,95 @@ void NuFit::model_base::update_sigmasq(const double *astro_pars, const double *p
 		hists &dataset = input[i];
 
 		// first reset all histograms 
-		dataset.nue.sigmasq.Reset();
-		dataset.numu.sigmasq.Reset();
-		dataset.nutau.sigmasq.Reset();	
-        dataset.muon.sigmasq.Reset();
+		dataset.nue.sigma.Reset();
+		dataset.numu.sigma.Reset();
+		dataset.nutau.sigma.Reset();	
+        dataset.muon.sigma.Reset();
 
-		// adjust sigmasq histograms
-
+		// adjust sigma histograms
+        TH3D sigmasq = dataset.nue.sigma;
+        double temp_sigmasq;
         // muon 
 
 		for (unsigned int j=0; j<dataset.muon.get_size(); ++j){ 
             w = dataset.muon.muon_weight[j]*pars[0];
-            dataset.muon.sigmasq.Fill(dataset.muon.logenergy_rec[j], dataset.muon.coszenith_rec[j], dataset.muon.ra_rec[j], w*w);
+            sigmasq.Fill(dataset.muon.logenergy_rec[j], dataset.muon.coszenith_rec[j], dataset.muon.ra_rec[j], w*w);
+        }
+        for (int k = 0; k<dataset.muon.sigma.GetNbinsX(); ++k){
+            for (int l = 0; l<dataset.muon.sigma.GetNbinsY(); ++l){
+                for (int m = 0; m<dataset.muon.sigma.GetNbinsZ(); ++m){
+                    temp_sigmasq = sigmasq.GetBinContent(k+1,l+1,m+1);
+                    dataset.muon.sigma.SetBinContent(k+1,l+1,m+1,std::sqrt(temp_sigmasq));
+                }
+            }
         }
 
 		// nue 
+        sigmasq.Reset();
 		for (unsigned int j=0; j<dataset.nue.get_size(); ++j){ 
             w_astro = dataset.nue.astro_weight[j]*astro_model->get_flux(astro_pars, dataset.nue.energy_prim[j], dataset.nue.coszenith_prim[j], dataset.nue.ra_prim[j], dataset.nue.ptype[j]);
             w_conv = dataset.nue.conv_weight[j]*pars[1];
             w_prompt = dataset.nue.prompt_weight[j]*pars[2];
             w = w_astro + w_conv + w_prompt;
-			dataset.nue.sigmasq.Fill(dataset.nue.logenergy_rec[j], dataset.nue.coszenith_rec[j], dataset.nue.ra_rec[j], w*w);
+			sigmasq.Fill(dataset.nue.logenergy_rec[j], dataset.nue.coszenith_rec[j], dataset.nue.ra_rec[j], w*w);
+        }
+        for (int k = 0; k<dataset.nue.sigma.GetNbinsX(); ++k){
+            for (int l = 0; l<dataset.nue.sigma.GetNbinsY(); ++l){
+                for (int m = 0; m<dataset.nue.sigma.GetNbinsZ(); ++m){
+                    temp_sigmasq = sigmasq.GetBinContent(k+1,l+1,m+1);
+                    dataset.nue.sigma.SetBinContent(k+1,l+1,m+1,std::sqrt(temp_sigmasq));
+                }
+            }
         }
 		
 		// numu
+        sigmasq.Reset();
 		for (unsigned int j=0; j<dataset.numu.get_size(); ++j){
             w_astro = dataset.numu.astro_weight[j]*astro_model->get_flux(astro_pars, dataset.numu.energy_prim[j], dataset.numu.coszenith_prim[j], dataset.numu.ra_prim[j], dataset.numu.ptype[j]);
             w_conv = dataset.numu.conv_weight[j]*pars[1];
             w_prompt = dataset.numu.prompt_weight[j]*pars[2];
             w = w_astro + w_conv + w_prompt;
-			dataset.numu.sigmasq.Fill(dataset.numu.logenergy_rec[j], dataset.numu.coszenith_rec[j], dataset.numu.ra_rec[j], w*w);
+			sigmasq.Fill(dataset.numu.logenergy_rec[j], dataset.numu.coszenith_rec[j], dataset.numu.ra_rec[j], w*w);
+        }
+        for (int k = 0; k<dataset.numu.sigma.GetNbinsX(); ++k){
+            for (int l = 0; l<dataset.numu.sigma.GetNbinsY(); ++l){
+                for (int m = 0; m<dataset.numu.sigma.GetNbinsZ(); ++m){
+                    temp_sigmasq = sigmasq.GetBinContent(k+1,l+1,m+1);
+                    dataset.numu.sigma.SetBinContent(k+1,l+1,m+1,std::sqrt(temp_sigmasq));
+                }
+            }
         }
 
 		// nutau
+        sigmasq.Reset();
 		for (unsigned int j=0; j<dataset.nutau.get_size(); ++j){
             w_astro = dataset.nutau.astro_weight[j]*astro_model->get_flux(astro_pars, dataset.nutau.energy_prim[j], dataset.nutau.coszenith_prim[j], dataset.nutau.ra_prim[j], dataset.nutau.ptype[j]);
             w_conv = dataset.nutau.conv_weight[j]*pars[1];
             w_prompt = dataset.nutau.prompt_weight[j]*pars[2];
             w = w_astro + w_conv + w_prompt;
-			dataset.nutau.sigmasq.Fill(dataset.nutau.logenergy_rec[j], dataset.nutau.coszenith_rec[j], dataset.nutau.ra_rec[j], w*w);
+			sigmasq.Fill(dataset.nutau.logenergy_rec[j], dataset.nutau.coszenith_rec[j], dataset.nutau.ra_rec[j], w*w);
         }
-		dataset.sigmasq.Reset();
-		dataset.sigmasq.Add(&dataset.nue.sigmasq);
-		dataset.sigmasq.Add(&dataset.numu.sigmasq);
-		dataset.sigmasq.Add(&dataset.nutau.sigmasq);
-		dataset.sigmasq.Add(&dataset.muon.sigmasq);
+        for (int k = 0; k<dataset.nutau.sigma.GetNbinsX(); ++k){
+            for (int l = 0; l<dataset.nutau.sigma.GetNbinsY(); ++l){
+                for (int m = 0; m<dataset.nutau.sigma.GetNbinsZ(); ++m){
+                    temp_sigmasq = sigmasq.GetBinContent(k+1,l+1,m+1);
+                    dataset.nutau.sigma.SetBinContent(k+1,l+1,m+1,std::sqrt(temp_sigmasq));
+                }
+            }
+        }
+		dataset.sigma.Reset();
+        for (int k = 0; k<dataset.nutau.sigma.GetNbinsX(); ++k){
+            for (int l = 0; l<dataset.nutau.sigma.GetNbinsY(); ++l){
+                for (int m = 0; m<dataset.nutau.sigma.GetNbinsZ(); ++m){
+                    double nue_sigma = dataset.nue.sigma.GetBinContent(k+1,l+1,m+1);
+                    double numu_sigma = dataset.numu.sigma.GetBinContent(k+1,l+1,m+1);
+                    double nutau_sigma = dataset.nutau.sigma.GetBinContent(k+1,l+1,m+1);
+                    double muon_sigma = dataset.muon.sigma.GetBinContent(k+1,l+1,m+1);
+                    temp_sigmasq = std::pow(nue_sigma,2)+std::pow(numu_sigma,2)+std::pow(nutau_sigma,2)+std::pow(muon_sigma,2);
+                    dataset.sigma.SetBinContent(k+1,l+1,m+1,std::sqrt(temp_sigmasq));
+                }
+            }
+        }
 
 	}
 	

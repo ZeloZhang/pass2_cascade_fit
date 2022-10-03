@@ -9,7 +9,8 @@ NuFit::interpolated_sys::interpolated_sys(std::string parameter_name, std::strin
     binsx = bins_x;
     binsy = bins_y;
     binsz = bins_z;
-
+    
+    return_zero = TF1("return_zero", "0", -10., 4000.);
     verbose = false;
 }
 
@@ -94,23 +95,13 @@ void NuFit::interpolated_sys::create_correction_functions(bool use_interpolation
     correction_functions["Prompt"].resize(dataset.get_nbinsx(), std::vector<std::vector<TF1>>(dataset.get_nbinsy(), std::vector<TF1>(dataset.get_nbinsz())));
     correction_functions["Astro"].resize(dataset.get_nbinsx(), std::vector<std::vector<TF1>>(dataset.get_nbinsy(), std::vector<TF1>(dataset.get_nbinsz())));
 
-    std::vector<std::vector<std::vector<TFitResultPtr>>> vec2;
-    correction_fit_results.insert(std::pair<std::string, std::vector<std::vector<std::vector<TFitResultPtr>>>> ("Conv", vec2));
-    correction_fit_results.insert(std::pair<std::string, std::vector<std::vector<std::vector<TFitResultPtr>>>> ("Prompt", vec2));
-    correction_fit_results.insert(std::pair<std::string, std::vector<std::vector<std::vector<TFitResultPtr>>>> ("astro", vec2));
+    correction_error_functions.insert(std::pair<std::string, std::vector<std::vector<std::vector<TF1>>>> ("Conv", vec));
+    correction_error_functions.insert(std::pair<std::string, std::vector<std::vector<std::vector<TF1>>>> ("Prompt", vec));
+    correction_error_functions.insert(std::pair<std::string, std::vector<std::vector<std::vector<TF1>>>> ("astro", vec));
 
-    correction_fit_results["Conv"].resize(dataset.get_nbinsx(), std::vector<std::vector<TFitResultPtr>>(dataset.get_nbinsy(), std::vector<TFitResultPtr>(dataset.get_nbinsz())));
-    correction_fit_results["Prompt"].resize(dataset.get_nbinsx(), std::vector<std::vector<TFitResultPtr>>(dataset.get_nbinsy(), std::vector<TFitResultPtr>(dataset.get_nbinsz())));
-    correction_fit_results["Astro"].resize(dataset.get_nbinsx(), std::vector<std::vector<TFitResultPtr>>(dataset.get_nbinsy(), std::vector<TFitResultPtr>(dataset.get_nbinsz())));
-
-    std::vector<std::vector<std::vector<double>>> vec3;
-    correction_errors.insert(std::pair<std::string, std::vector<std::vector<std::vector<double>>>> ("Conv", vec3));
-    correction_errors.insert(std::pair<std::string, std::vector<std::vector<std::vector<double>>>> ("Prompt", vec3));
-    correction_errors.insert(std::pair<std::string, std::vector<std::vector<std::vector<double>>>> ("astro", vec3));
-
-    correction_errors["Conv"].resize(dataset.get_nbinsx(), std::vector<std::vector<double>>(dataset.get_nbinsy(), std::vector<double>(dataset.get_nbinsz())));
-    correction_errors["Prompt"].resize(dataset.get_nbinsx(), std::vector<std::vector<double>>(dataset.get_nbinsy(), std::vector<double>(dataset.get_nbinsz())));
-    correction_errors["Astro"].resize(dataset.get_nbinsx(), std::vector<std::vector<double>>(dataset.get_nbinsy(), std::vector<double>(dataset.get_nbinsz())));
+    correction_error_functions["Conv"].resize(dataset.get_nbinsx(), std::vector<std::vector<TF1>>(dataset.get_nbinsy(), std::vector<TF1>(dataset.get_nbinsz())));
+    correction_error_functions["Prompt"].resize(dataset.get_nbinsx(), std::vector<std::vector<TF1>>(dataset.get_nbinsy(), std::vector<TF1>(dataset.get_nbinsz())));
+    correction_error_functions["Astro"].resize(dataset.get_nbinsx(), std::vector<std::vector<TF1>>(dataset.get_nbinsy(), std::vector<TF1>(dataset.get_nbinsz())));
 
     success_conv.resize(dataset.get_nbinsx(), std::vector<std::vector<bool>>(dataset.get_nbinsy(), std::vector<bool>(dataset.get_nbinsz())));
     success_prompt.resize(dataset.get_nbinsx(), std::vector<std::vector<bool>>(dataset.get_nbinsy(), std::vector<bool>(dataset.get_nbinsz())));
@@ -137,17 +128,11 @@ void NuFit::interpolated_sys::create_correction_functions(bool use_interpolation
                 double baseline_expectation_conv = dataset.conv.GetBinContent(k+1, l+1, m+1);
                 double baseline_error_conv = dataset.conv.GetBinError(k+1, l+1, m+1);
 
-                //std::cout << name << " ratio conv (" << k << "," << l << "," << m << ")=" << sim_data[size-1].conv.GetBinContent(k+1,l+1,m+1) / baseline_expectation_conv << std::endl;
-
                 double baseline_expectation_prompt = dataset.prompt.GetBinContent(k+1, l+1, m+1);
                 double baseline_error_prompt = dataset.prompt.GetBinError(k+1, l+1, m+1);
 
-                //std::cout << name << " ratio prompt (" << k << "," << l << "," << m << ")=" << sim_data[size-1].prompt.GetBinContent(k+1,l+1,m+1) / baseline_expectation_prompt << std::endl;
-
                 double baseline_expectation_astro = dataset.astro.GetBinContent(k+1, l+1, m+1);
                 double baseline_error_astro = dataset.astro.GetBinError(k+1, l+1, m+1);
-
-                //std::cout << name << " ratio astro (" << k << "," << l << "," << m << ")=" << sim_data[size-1].astro.GetBinContent(k+1,l+1,m+1) / baseline_expectation_astro << std::endl;
 
                 for(unsigned int n=0; n<size; ++n)
                 {
@@ -170,6 +155,7 @@ void NuFit::interpolated_sys::create_correction_functions(bool use_interpolation
 
 void NuFit::interpolated_sys::create_fit(const double &baseline_val, const double &baseline_err, std::vector<TH3D *> &hists, const unsigned int &k, const unsigned int &l, const unsigned int &m, std::vector<std::vector<std::vector<bool>>> &success, std::string component, bool use_interpolation)
 {
+
     // subtract one, since we only fit the systematics datasets. 
     // the interpolation is forced to go through baseline point
     // thus the baseline point is not another degree of freedom
@@ -187,8 +173,15 @@ void NuFit::interpolated_sys::create_fit(const double &baseline_val, const doubl
     std::string fitname(name+"_fit_"+std::to_string(k)+std::to_string(l)+std::to_string(m));
     //std::string formula("[0]+[1]*(x-"+std::to_string(baseline_value)+")");
     std::string formula("1.0+[0]*(x-"+std::to_string(baseline_value)+")");
-    TF1 fitfunc(fitname.c_str(), formula.c_str(), -10., 10.);
-
+    TF1 fitfunc(fitname.c_str(), formula.c_str(), -3., 3.);
+    ROOT::Math::Interpolator *itp_error = new ROOT::Math::Interpolator(3,ROOT::Math::Interpolation::kLINEAR);
+    NuFit::root_interpolator_wrapper *inter_error_wrapper = new NuFit::root_interpolator_wrapper(itp_error);
+    TF1 errorfunc = TF1("error",inter_error_wrapper,&NuFit::root_interpolator_wrapper::Eval,-3,3,0,"NuFit::root_interpolator_wrapper","Eval");
+    int ninter = 101;
+    std::vector<double> x;
+    x.reserve(ninter);
+    std::vector<double> error;
+    error.reserve(ninter);
 
     bool valid_point = true;
 
@@ -203,10 +196,9 @@ void NuFit::interpolated_sys::create_fit(const double &baseline_val, const doubl
         }
 
         // disable systematics parametrization for this bin
-        //fitfunc.SetParameter(0, 1.0);
-        //fitfunc.SetParameter(1, 0.0);
         fitfunc.SetParameter(0, 0.0);
         correction_functions[component][k][l][m]=fitfunc;        
+        correction_error_functions[component][k][l][m]=return_zero;
     }
     else 
     {
@@ -236,6 +228,13 @@ void NuFit::interpolated_sys::create_fit(const double &baseline_val, const doubl
                 }
                 */
             }
+            else
+            {
+                ratios.push_back(1.0);
+                ratios_err.push_back(0.0);
+                vals.push_back(baseline_value);
+                vals_err.push_back(0.0);
+            }
         }
     
         if (valid_point)
@@ -243,8 +242,8 @@ void NuFit::interpolated_sys::create_fit(const double &baseline_val, const doubl
             if (use_interpolation)
             {
                 TF1 fitfunc;
-                std::vector<std::vector<double>> x{{0.9,1,1.1},{0.9,1,1.1}};
-                std::vector<std::vector<double>> y{{0.9,1,1.1},{1.8,2,2.2}};
+                //std::vector<std::vector<double>> x{{0.9,1,1.1},{0.9,1,1.1}};
+                //std::vector<std::vector<double>> y{{0.9,1,1.1},{1.8,2,2.2}};
                 //char name_char[10+sizeof(char)];
                 //std::sprintf(name_char,"f");
                 ROOT::Math::Interpolator *itp = new ROOT::Math::Interpolator(3,ROOT::Math::Interpolation::kLINEAR);
@@ -252,19 +251,40 @@ void NuFit::interpolated_sys::create_fit(const double &baseline_val, const doubl
                 //itp123->SetData(x[0],y[0]);
                 NuFit::root_interpolator_wrapper *inter_wrapper = new NuFit::root_interpolator_wrapper(itp);
                 fitfunc = TF1("f",inter_wrapper,&NuFit::root_interpolator_wrapper::Eval,5,3000,0,"NuFit::root_interpolator_wrapper","Eval");
-
                 correction_functions[component][k][l][m]=fitfunc;
-
-                //std::cout<<"construction test Eval"<<correction_functions[component][k][l][m].Eval(500)<<std::endl;
+                correction_error_functions[component][k][l][m]=return_zero;
             }
             else{
                 // data to be interpolated/fitted
                 TGraphErrors graph(ratios.size(), &(vals[0]), &(ratios[0]), &(vals_err[0]), &(ratios_err[0]));
-                int status = graph.Fit(&fitfunc, "QS");        
+                //std::cout<<"1111111111111111"<<std::endl;
+                //for (int i = 0; i<sizeof(ratios)/sizeof(ratios[0]); i++)
+                //{
+                //    std::cout<<ratios[i]<<" "<<vals[i]<<" "<<ratios_err[i]<<std::endl;
+                //}
+                TFitResultPtr status = graph.Fit(&fitfunc, "QS");        
+                TFitResult tfr = TFitResult(status);
+
                 if ((int(status)==0) && ((fitfunc.GetProb() > 0.001) || (fitfunc.GetNDF()==0)))
                 {
                     correction_functions[component][k][l][m]=fitfunc;
-                    correction_fit_results[component][k][l][m]=status;
+                    x.clear();
+                    error.clear();
+                    for (int i = 0; i<ninter; i++)
+                    {
+                        x.push_back(-3+(3.0-(-3.0))/(ninter-1)*i);
+                    }
+                    double x_arr[ninter];
+                    double err_arr[ninter];
+                    std::copy(x.begin(),x.end(),x_arr);
+                    status->GetConfidenceIntervals(ninter-1,1,1,x_arr,err_arr,0.683);
+                    for (unsigned int i = 0; i<sizeof(err_arr)/sizeof(err_arr[0]); i++)
+                    {
+                        error.push_back(err_arr[i]);
+                    }
+                    itp_error->SetData(x,error);
+                    errorfunc = TF1("error",inter_error_wrapper,&NuFit::root_interpolator_wrapper::Eval,-3,3,0,"NuFit::root_interpolator_wrapper","Eval");
+                    correction_error_functions[component][k][l][m]=errorfunc;
                 }
                 else 
                 {
@@ -316,10 +336,9 @@ void NuFit::interpolated_sys::create_fit(const double &baseline_val, const doubl
             // invalid point    
             // disable systematics parametrization for this bin
             if (verbose) std::cout << "... ignoring " << par_name << " systematics for flavor " << flavor << " and component "<< component << " in " << name << " for bin " << k << " " << l << " " << m << std::endl;    
-            //fitfunc.SetParameter(0, 1.0);
-            //fitfunc.SetParameter(1, 0.0);
             fitfunc.SetParameter(0, 0.0);
             correction_functions[component][k][l][m]=fitfunc;
+            correction_error_functions[component][k][l][m]=return_zero;
         }
     }
     success[k][l][m] = valid_point;
@@ -340,8 +359,7 @@ void NuFit::interpolated_sys::fill_hists()
         {
             dataset.conv.Fill(dataset.logenergy_rec[j], dataset.coszenith_rec[j], dataset.ra_rec[j], dataset.conv_weight[j]);
             dataset.prompt.Fill(dataset.logenergy_rec[j], dataset.coszenith_rec[j], dataset.ra_rec[j], dataset.prompt_weight[j]);
-            dataset.astro.Fill(dataset.logenergy_rec[j], dataset.coszenith_rec[j], dataset.ra_rec[j], dataset.astro_weight[j] * 2.2 * 1.e-18 * TMath::Power(dataset.energy_prim[j] / 1.e5, -2.5)); // assume astro for global fit
-            //dataset.astro.Fill(dataset.logenergy_rec[j], dataset.coszenith_rec[j], dataset.ra_rec[j], dataset.astro_weight[j] * 2.2 * 1.e-18 * TMath::Power(dataset.energy_prim[j] / 1.e5, -2.54)); // assume astro for global fit
+            dataset.astro.Fill(dataset.logenergy_rec[j], dataset.coszenith_rec[j], dataset.ra_rec[j], dataset.astro_weight[j] * 1.6 * 1.e-18 * TMath::Power(dataset.energy_prim[j] / 1.e5, -2.5)); // assume astro for global fit
         }
 
     }
@@ -368,14 +386,7 @@ double NuFit::interpolated_sys::get_efficiency_correction(const double &x, const
     // but correction factors are stored in array of 0 to N-1
     // if you are interested in correction for ROOT histogram bin k, l, m
     // this function needs to be queried with k-1, l-1, m-1    
-    
-    //return correction_functions[component][binx][biny][binz].Eval(x);
 
-    //std::cout<<"componet"<<std::endl;
-    //std::cout<<component<<std::endl;
-    //std::cout<<"NuFit::interpolated_sys::get_efficiency_correction::k,l,m"<<std::endl;
-    //std::cout<<binx<<" "<<biny<<" "<<binz<<std::endl;
-    
     double corr = correction_functions[component][binx][biny][binz].Eval(x);
 
     if((corr>0.1)&&(corr<2.0))
@@ -384,32 +395,36 @@ double NuFit::interpolated_sys::get_efficiency_correction(const double &x, const
         return 0.1;
     else
         return 2.0;
-
 }
 
 
-double NuFit::interpolated_sys::get_relative_correction_error(const double &x, const std::string &component, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz) {
+double NuFit::interpolated_sys::get_efficiency_correction_error(const double &x, const std::string &component, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz) 
+{
     // root histograms use range 1 to N to index bins
     // but correction factors are stored in array of 0 to N-1
     // if you are interested in correction for ROOT histogram bin k, l, m
     // this function needs to be queried with k-1, l-1, m-1    
-    
-    double corr = correction_functions[component][binx][biny][binz].Eval(x);
-    if((corr>0.1)&&(corr<2.0))
-        corr = corr;
-    else if(corr<=0.1)
-        corr = 0.1;
+    double sigma = 0.0;
+    bool valid = true;
+    if (!component.compare("Conv"))
+        valid = success_conv[binx][biny][binz];
+    else if (!component.compare("Prompt"))
+        valid = success_prompt[binx][biny][binz];
+    else if (!component.compare("Astro"))
+        valid = success_astro[binx][biny][binz];
+
+    if (valid)
+    {
+        sigma = correction_error_functions[component][binx][biny][binz].Eval(x);
+        if (!isfinite(sigma))
+        {
+            sigma = 0;
+        }
+    }
     else
-        corr = 2.0;
+    {
+        sigma = 0;
+    }
 
-    double sigma[1];
-    double xx[1];
-    xx[0] = x;
-    correction_fit_results[component][binx][biny][binz]->GetConfidenceIntervals(1,1,1,xx,sigma,0.68);
-
-    double relative_correction_error = sigma[0]/corr;
-
-    return relative_correction_error;
-
-
+    return sigma;
 }

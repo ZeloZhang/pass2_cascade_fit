@@ -2,7 +2,7 @@
 
 NuFit::muon_input::muon_input(std::string name, std::vector<double> &bins_x, std::vector<double> &bins_y, std::vector<double> &bins_z)
 	: hist((name+std::string("")).c_str(), (name+std::string("")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
-    sigmasq((name+std::string("_sigmasq")).c_str(), (name+std::string("_sigmasq")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
+    sigma((name+std::string("_sigma")).c_str(), (name+std::string("_sigma")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
     efficiency_correction((name+std::string("_efficiency_correction")).c_str(), (name+std::string("_efficiency_correction")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])) 
 { 
     unsigned int nbinsx = bins_x.size()-1;
@@ -59,9 +59,9 @@ void NuFit::muon_input::read(std::string &infile)
 			ra_rec.push_back(value[7]);
 			muon_weight.push_back(value[8]);	
 			muon_weight_iter.push_back(0);	
-            m.push_back(sigmasq.GetXaxis()->FindBin(value[7]));
-            l.push_back(sigmasq.GetXaxis()->FindBin(value[6]));
-            k.push_back(sigmasq.GetXaxis()->FindBin(value[5]));
+            m.push_back(sigma.GetXaxis()->FindBin(value[7]));
+            l.push_back(sigma.GetXaxis()->FindBin(value[6]));
+            k.push_back(sigma.GetXaxis()->FindBin(value[5]));
 		}
 	}
         else

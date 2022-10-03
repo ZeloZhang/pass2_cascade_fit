@@ -67,14 +67,14 @@ int main(int argc, char **argv)
     NuFit::helpers::par_options muon_norm("muon_norm", 1.2, 0.01, 0.0, 10.0);
 	NuFit::helpers::par_options conv_norm("conv_norm", 1.0, 0.01, 0.0, 10.0);
 	NuFit::helpers::par_options prompt_norm("prompt_norm", 0.0, 0.1, 0.0, 100.0);
-	//NuFit::helpers::par_options cr_index("delta_cr", 0.0, 0.01, -0.5, 0.5);
-    //NuFit::helpers::par_options dom_eff("dom_efficiency", 1.0, 0.01, 0.0, 10.0);
-    //NuFit::helpers::par_options scattering("scattering", 1.0, 0.01, 0.0, 10.0);
-	//NuFit::helpers::par_options absorption("absorption", 1.0, 0.01, 0.0, 10.0);
-	//NuFit::helpers::par_options holeicep0("holeicep0", 0.0, 0.01, -2.0, 1.0);
-	//NuFit::helpers::par_options holeicep1("holeicep1", 0.0, 0.01, -0.2, 0.2);
-	//NuFit::helpers::par_options selfveto("selfveto", 1000, 10, 50.0, 3000);
-	//NuFit::helpers::par_options hadronicinteraction("hadronicinteraction", 0.0, 0.01, -2, 3);
+	NuFit::helpers::par_options cr_index("delta_cr", 0.0, 0.01, -0.5, 0.5);
+    NuFit::helpers::par_options dom_eff("dom_efficiency", 1.0, 0.01, 0.0, 10.0);
+    NuFit::helpers::par_options scattering("scattering", 1.0, 0.01, 0.0, 10.0);
+	NuFit::helpers::par_options absorption("absorption", 1.0, 0.01, 0.0, 10.0);
+	NuFit::helpers::par_options holeicep0("holeicep0", 0.0, 0.01, -2.0, 1.0);
+	NuFit::helpers::par_options holeicep1("holeicep1", 0.0, 0.01, -0.2, 0.2);
+	NuFit::helpers::par_options selfveto("selfveto", 1000, 10, 50.0, 3000);
+	NuFit::helpers::par_options hadronicinteraction("hadronicinteraction", 0.0, 0.01, -2, 3);
 
 	/** .. package everything */
 	std::map<std::string, NuFit::helpers::par_options> options;
@@ -83,14 +83,14 @@ int main(int argc, char **argv)
 	options.insert(std::pair<std::string, NuFit::helpers::par_options>(conv_norm.name, conv_norm));
 	options.insert(std::pair<std::string, NuFit::helpers::par_options>(muon_norm.name, muon_norm));
 	options.insert(std::pair<std::string, NuFit::helpers::par_options>(prompt_norm.name, prompt_norm));	
-	//options.insert(std::pair<std::string, NuFit::helpers::par_options>(cr_index.name, cr_index));
-    //options.insert(std::pair<std::string, NuFit::helpers::par_options>(dom_eff.name, dom_eff));
-    //options.insert(std::pair<std::string, NuFit::helpers::par_options>(scattering.name, scattering));
-	//options.insert(std::pair<std::string, NuFit::helpers::par_options>(absorption.name, absorption));
-	//options.insert(std::pair<std::string, NuFit::helpers::par_options>(holeicep0.name, holeicep0));
-	//options.insert(std::pair<std::string, NuFit::helpers::par_options>(holeicep1.name, holeicep1));
-	//options.insert(std::pair<std::string, NuFit::helpers::par_options>(selfveto.name, selfveto));
-	//options.insert(std::pair<std::string, NuFit::helpers::par_options>(hadronicinteraction.name, hadronicinteraction));
+	options.insert(std::pair<std::string, NuFit::helpers::par_options>(cr_index.name, cr_index));
+    options.insert(std::pair<std::string, NuFit::helpers::par_options>(dom_eff.name, dom_eff));
+    options.insert(std::pair<std::string, NuFit::helpers::par_options>(scattering.name, scattering));
+	options.insert(std::pair<std::string, NuFit::helpers::par_options>(absorption.name, absorption));
+	options.insert(std::pair<std::string, NuFit::helpers::par_options>(holeicep0.name, holeicep0));
+	options.insert(std::pair<std::string, NuFit::helpers::par_options>(holeicep1.name, holeicep1));
+	options.insert(std::pair<std::string, NuFit::helpers::par_options>(selfveto.name, selfveto));
+	options.insert(std::pair<std::string, NuFit::helpers::par_options>(hadronicinteraction.name, hadronicinteraction));
 
 	/** .. and send to minimizer */
 	min.set_options(options);
@@ -102,14 +102,14 @@ int main(int argc, char **argv)
 	pars.insert(std::pair<std::string, double>(prompt_norm.name, prompt_norm.seed));
 	pars.insert(std::pair<std::string, double>(astro_norm.name, astro_norm.seed));
 	pars.insert(std::pair<std::string, double>(astro_index.name, astro_index.seed));
-	//pars.insert(std::pair<std::string, double>(cr_index.name, cr_index.seed));
-    //pars.insert(std::pair<std::string, double>(dom_eff.name, dom_eff.seed));
-    //pars.insert(std::pair<std::string, double>(scattering.name, scattering.seed));
-	//pars.insert(std::pair<std::string, double>(absorption.name, absorption.seed));
-	//pars.insert(std::pair<std::string, double>(holeicep0.name, holeicep0.seed));
-	//pars.insert(std::pair<std::string, double>(holeicep1.name, holeicep1.seed));
-	//pars.insert(std::pair<std::string, double>(selfveto.name, selfveto.seed));
-	//pars.insert(std::pair<std::string, double>(hadronicinteraction.name, hadronicinteraction.seed));
+	pars.insert(std::pair<std::string, double>(cr_index.name, cr_index.seed));
+    pars.insert(std::pair<std::string, double>(dom_eff.name, dom_eff.seed));
+    pars.insert(std::pair<std::string, double>(scattering.name, scattering.seed));
+	pars.insert(std::pair<std::string, double>(absorption.name, absorption.seed));
+	pars.insert(std::pair<std::string, double>(holeicep0.name, holeicep0.seed));
+	pars.insert(std::pair<std::string, double>(holeicep1.name, holeicep1.seed));
+	pars.insert(std::pair<std::string, double>(selfveto.name, selfveto.seed));
+	pars.insert(std::pair<std::string, double>(hadronicinteraction.name, hadronicinteraction.seed));
     min.set_tolerance(1);
 
     

@@ -27,8 +27,21 @@
 #include <TFitResult.h>
 #include <TCanvas.h>
 #include "Math/Interpolator.h"
+#include "Math/IFunctionfwd.h"
+#include "Math/IParamFunctionfwd.h"
+#include "Math/WrappedMultiTF1.h"
+
+
 namespace NuFit
 {
+    class KFitResult : public TFitResult {
+        typedef ROOT::Math::IParamMultiFunction IModelFunction;
+        public:
+        using TFitResult::TFitResult;
+        void ResetModelFunction(TF1* func){
+            this->SetModelFunction(std::shared_ptr<IModelFunction>(dynamic_cast<IModelFunction*>(ROOT::Math::WrappedMultiTF1(*func).Clone())));
+        }
+    };
     class root_interpolator_wrapper
     {
         public:
@@ -50,7 +63,7 @@ namespace NuFit
 			void create_correction_functions(bool use_interpolation=false);
 			//void create_correction_functions();
 			double get_efficiency_correction(const double &x, const std::string &component, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz);
-			double get_relative_correction_error(const double &x, const std::string &component, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz);
+			double get_efficiency_correction_error(const double &x, const std::string &component, const unsigned int &binx, const unsigned int &biny, const unsigned int &binz);
 
 		private:	
 			void fill_hists();
@@ -59,11 +72,8 @@ namespace NuFit
 			std::vector<double> binsy; // cos zenith
 			std::vector<double> binsz; // ra
 
-			
-		
 			std::unordered_map<std::string, std::vector<std::vector<std::vector<TF1>>>> correction_functions; // for faster access to fit functions (by selection for flavor)
-			std::unordered_map<std::string, std::vector<std::vector<std::vector<TFitResultPtr>>>> correction_fit_results; // for faster access to correction fit results and confidence intervals (by selection for flavor)
-			std::unordered_map<std::string, std::vector<std::vector<std::vector<double>>>> correction_errors; // for faster access to correction error (by selection for flavor)
+			std::unordered_map<std::string, std::vector<std::vector<std::vector<TF1>>>> correction_error_functions; // for faster access to fit functions (by selection for flavor)
 			// total number of nested vector elements are NbinsX * NbinsY & NbinsZ
 			std::vector<std::vector<std::vector<bool>>> success_conv; // len is number of bins
 			std::vector<std::vector<std::vector<bool>>> success_prompt; // to keep track of fit status in each bin
@@ -79,6 +89,7 @@ namespace NuFit
 			std::string flavor;
 
 			bool verbose;
+            TF1 return_zero;
 
 	};
 }

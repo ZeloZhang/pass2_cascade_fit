@@ -4,7 +4,7 @@ NuFit::neutrino_input::neutrino_input(std::string name, std::vector<double> &bin
 	: conv((name+std::string("_conv")).c_str(), (name+std::string("_conv")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
 	  prompt((name+std::string("_prompt")).c_str(), (name+std::string("_prompt")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
 	  astro((name+std::string("_astro")).c_str(), (name+std::string("_astro")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])), 
-	  sigmasq((name+std::string("_sigmasq")).c_str(), (name+std::string("_sigmasq")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
+	  sigma((name+std::string("_sigma")).c_str(), (name+std::string("_sigma")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
 	  conv_efficiency_correction((name+std::string("_conv_efficiency_correction")).c_str(), (name+std::string("_conv_efficiency_correction")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
 	  prompt_efficiency_correction((name+std::string("_prompt_efficiency_correction")).c_str(), (name+std::string("_prompt_efficiency_correction")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0])),
 	  astro_efficiency_correction((name+std::string("_astro_efficiency_correction")).c_str(), (name+std::string("_astro_efficiency_correction")).c_str(), bins_x.size()-1, &(bins_x[0]), bins_y.size()-1, &(bins_y[0]), bins_z.size()-1, &(bins_z[0]))
@@ -77,9 +77,9 @@ void NuFit::neutrino_input::read(std::string infile)
 			 prompt_weight_iter.push_back(0);
 			 astro_weight.push_back(value[11]);	
 			 astro_weight_iter.push_back(0);	
-             m.push_back(sigmasq.GetXaxis()->FindBin(value[8]));
-             l.push_back(sigmasq.GetXaxis()->FindBin(value[7]));
-             k.push_back(sigmasq.GetXaxis()->FindBin(value[6]));
+             m.push_back(sigma.GetXaxis()->FindBin(value[8]));
+             l.push_back(sigma.GetXaxis()->FindBin(value[7]));
+             k.push_back(sigma.GetXaxis()->FindBin(value[6]));
 		 }
 	}
 	else 

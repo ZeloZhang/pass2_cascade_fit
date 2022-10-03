@@ -38,7 +38,7 @@ namespace NuFit
 			TH3D atm_prompt_orig;
 			TH3D astro;
 			TH3D mcsum;
-			TH3D sigmasq;
+			TH3D sigma;
 			TH3D gof;
 			TH3D neglogl;
 	
