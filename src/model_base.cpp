@@ -588,22 +588,43 @@ void NuFit::model_base::update_atmospherics(const double *pars)
 
 		else if (dataset.name.compare(std::string("cascade_as"))==0) {
 		        dataset.muon.hist.Reset();
-                        dataset.muon.hist = *((TH3D*) dataset.muon.hist_orig.Clone());
-                        dataset.muon.hist.Scale(pars[4]); // muon norm (no shape change)	
+                dataset.muon.hist = *((TH3D*) dataset.muon.hist_orig.Clone());
+                dataset.muon.hist.Scale(pars[4]); // muon norm (no shape change)	
 		}
 		else {
-                        dataset.muon.hist.Reset();
-                        dataset.muon.hist = *((TH3D*) dataset.muon.hist_orig.Clone());
-                        dataset.muon.hist.Scale(pars[0]); // muon norm (no shape change)
+                dataset.muon.hist.Reset();
+                dataset.muon.hist = *((TH3D*) dataset.muon.hist_orig.Clone());
+                dataset.muon.hist.Scale(pars[0]); // muon norm (no shape change)
 		}
 
-		dataset.atm_conv.Reset();
-		dataset.atm_conv = *((TH3D*) dataset.atm_conv_orig.Clone());
-		dataset.atm_conv.Scale(pars[1]); // conv norm (no shape change)
+        dataset.numu.conv.Reset();
+        dataset.numu.conv = *((TH3D*) dataset.numu.conv_orig.Clone());
+        dataset.numu.conv.Scale(pars[1]); // conv norm (no shape change)
 
-		dataset.atm_prompt.Reset();
-		dataset.atm_prompt = *((TH3D*) dataset.atm_prompt_orig.Clone());
-		dataset.atm_prompt.Scale(pars[2]); // prompt norm (no shape change)	
+        dataset.nue.conv.Reset();
+        dataset.nue.conv = *((TH3D*) dataset.nue.conv_orig.Clone());
+        dataset.nue.conv.Scale(pars[1]); // conv norm (no shape change)
+
+        dataset.atm_conv.Reset();
+        dataset.atm_conv.Add(&dataset.nue.conv);
+        dataset.atm_conv.Add(&dataset.numu.conv);
+
+        dataset.numu.prompt.Reset();
+        dataset.numu.prompt = *((TH3D*) dataset.numu.prompt_orig.Clone());
+        dataset.numu.prompt.Scale(pars[2]); // conv norm (no shape change)
+
+        dataset.nue.prompt.Reset();
+        dataset.nue.prompt = *((TH3D*) dataset.nue.prompt_orig.Clone());
+        dataset.nue.prompt.Scale(pars[2]); // conv norm (no shape change)
+
+        dataset.nutau.prompt.Reset();
+        dataset.nutau.prompt = *((TH3D*) dataset.nutau.prompt_orig.Clone());
+        dataset.nutau.prompt.Scale(pars[2]); // conv norm (no shape change)
+
+        dataset.atm_prompt.Reset();
+        dataset.atm_prompt.Add(&dataset.numu.prompt);
+        dataset.atm_prompt.Add(&dataset.nue.prompt);
+        dataset.atm_prompt.Add(&dataset.nutau.prompt);
 	}
 	return;
 }

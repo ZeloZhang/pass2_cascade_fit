@@ -112,6 +112,8 @@ void NuFit::hists::read(std::string f_nue, std::string f_numu, std::string f_nut
 
 	// copy the histogram
 	atm_conv_orig = *((TH3D*) atm_conv.Clone());
+    numu.conv_orig = *((TH3D*) numu.conv.Clone());
+    nue.conv_orig = *((TH3D*) nue.conv.Clone());
 
 	atm_prompt.Add(&nue.prompt);
 	atm_prompt.Add(&numu.prompt);
@@ -119,6 +121,9 @@ void NuFit::hists::read(std::string f_nue, std::string f_numu, std::string f_nut
 
 	// copy the histogram
 	atm_prompt_orig = *((TH3D*) atm_prompt.Clone());
+    numu.prompt_orig = *((TH3D*) numu.prompt.Clone());
+    nue.prompt_orig = *((TH3D*) nue.prompt.Clone());
+    nutau.prompt_orig = *((TH3D*) nutau.prompt.Clone());
 
 	//astro.Add(&nue.astro);
 	//astro.Add(&numu.astro);
