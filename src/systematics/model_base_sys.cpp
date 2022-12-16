@@ -69,6 +69,18 @@ NuFit::model_base_sys::model_base_sys(std::vector<hists> fitdata, astro_model_ba
     prior_deltacr_sigma = 0.05;
     prior_deltacr_mean_current = prior_deltacr_mean_default;
 
+    prior_hip0_mean_default = -0.27;
+    prior_hip0_sigma = 1;
+    prior_hip0_mean_current = prior_hip0_mean_default;
+
+    prior_hip1_mean_default = -0.042;
+    prior_hip1_sigma = 0.15;
+    prior_hip1_mean_current = prior_hip1_mean_default;
+
+    prior_hadronicinteraction_mean_default = 0.5;
+    prior_hadronicinteraction_sigma = 1;
+    prior_hadronicinteraction_mean_current = prior_hadronicinteraction_mean_default;
+
     prior_scattering_default = 1.0;
     prior_scattering_current = prior_scattering_default;
 
@@ -134,7 +146,15 @@ double NuFit::model_base_sys::logprior(const double *pars)
 
     // delta cr 
     neglogl += gaussian_prior_penalty(pars[parameters["delta_cr"]], prior_deltacr_mean_current, prior_deltacr_sigma);
-        
+
+    // holeice p0
+    neglogl += gaussian_prior_penalty(pars[parameters["holeicep0"]], prior_hip0_mean_current, prior_hip0_sigma);
+
+    // holeice p1
+    neglogl += gaussian_prior_penalty(pars[parameters["holeicep1"]], prior_hip1_mean_current, prior_hip1_sigma);
+
+    // hadronicinteraction
+    neglogl += gaussian_prior_penalty(pars[parameters["hadronicinteraction"]], prior_hadronicinteraction_mean_current, prior_hadronicinteraction_sigma);
     return neglogl;
 }
 
@@ -614,10 +634,12 @@ void NuFit::model_base_sys::generate_truncated_bivnorm_rv(double means[2], doubl
 
 void NuFit::model_base_sys::update_auxillary_data(std::map<std::string, double> &point) {
     prior_domeff_mean_current = point["dom_efficiency"]; 
-    //prior_deltacr_mean_current = point["delta_cr"];
-    //prior_absorption_current = point["absorption"];
-    //prior_scattering_current = point["scattering"];
-    //std::cout << "dom_eff: " << prior_domeff_mean_current << " delta_cr: " << prior_deltacr_mean_current << " absorption: " << prior_absorption_current << " scattering: " << prior_scattering_current << " HI scattering: " << prior_hi_mean_current << std::endl;
+    prior_deltacr_mean_current = point["delta_cr"];
+    prior_hip0_mean_current = point["holeicep0"];
+    prior_hip1_mean_current = point["holeicep1"];
+    prior_hadronicinteraction_mean_current = point["hadronicinteraction"];
+    prior_absorption_current = point["absorption"];
+    prior_scattering_current = point["scattering"];
 }
 
 
@@ -626,6 +648,9 @@ void NuFit::model_base_sys::reset_auxillary_data()
     // reset to default constraints
     prior_domeff_mean_current = prior_domeff_mean_default;
     prior_deltacr_mean_current = prior_deltacr_mean_default;
+    prior_hip0_mean_current = prior_hip0_mean_default;
+    prior_hip1_mean_current = prior_hip1_mean_default;
+    prior_hadronicinteraction_mean_current = prior_hadronicinteraction_mean_default;
     prior_absorption_current = prior_absorption_default;
     prior_scattering_current = prior_scattering_default;
 
