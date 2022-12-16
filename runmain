@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+source /data/user/zzhang1/ROOT/build/bin/thisroot.sh
+/data/user/zzhang1/fit_pass2_sys/main.exe $1 $2 $3 $4
