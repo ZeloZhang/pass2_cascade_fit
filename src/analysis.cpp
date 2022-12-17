@@ -224,6 +224,7 @@ double NuFit::analysis::get_likelihood_abs(const double *pars)
     //return 2.0 * model->likelihood_abs(pars);
 }
 
+/*
 double NuFit::analysis::get_lnprob(boost::python::numeric::array pars_)
 {
     // assume that pars is of length npars
@@ -236,6 +237,7 @@ double NuFit::analysis::get_lnprob(boost::python::numeric::array pars_)
     return (-1.0) * model->likelihood_abs_say(pars); 
     //return (-1.0) * model->likelihood_abs(pars); 
 }
+*/
 
 unsigned int NuFit::analysis::get_n_llh_evals() 
 {
@@ -316,6 +318,7 @@ void NuFit::analysis::reset_auxillary_data()
     return;
 }
 
+/*
 #include <boost/python.hpp>
 using namespace boost::python;
 BOOST_PYTHON_MODULE(analysis)
@@ -327,3 +330,4 @@ BOOST_PYTHON_MODULE(analysis)
         .def("get_lnprob", &NuFit::analysis::get_lnprob)
         ;
 }
+*/

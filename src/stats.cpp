@@ -4,11 +4,13 @@ NuFit::stats::stats(NuFit::analysis &analysis_):
 	target_func(&analysis_, &NuFit::analysis::get_likelihood, analysis_.get_npars()),
 	analysis( analysis_ )
 {
-	min = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad"); // supports all minimizers available via ROOT (including ROOT's interface to GSL minimizers). 
+	min = ROOT::Math::Factory::CreateMinimizer("Minuit", "Migrad"); // supports all minimizers available via ROOT (including ROOT's interface to GSL minimizers). 
+	//min = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad"); // supports all minimizers available via ROOT (including ROOT's interface to GSL minimizers). 
 	//min = ROOT::Math::Factory::CreateMinimizer("GSLMultiMin", "SteepestDescent"); // supports all minimizers available via ROOT (including ROOT's interface to GSL minimizers). 
 
 	min->SetFunction(target_func); // likelihood function without terms that have no parameter dependence	
-	min->SetMaxFunctionCalls(1000000); // ROOT default
+	//min->SetMaxFunctionCalls(1000000); // ROOT default
+	min->SetMaxFunctionCalls(3000000);
 	min->SetMaxIterations(100000); // ROOT default
 	min->SetTolerance(0.001); // ROOT default, can be changed using NuFit::stats::set_tolerance()
 
@@ -55,6 +57,7 @@ void NuFit::stats::set_options(std::map<std::string, NuFit::helpers::par_options
 
 		// name exists
 		seeds.push_back(opts.at(names[i]).seed);
+        //bestpars.push_back(opts.at(names[i]).seed); //initially set bestpar by seed
 		stepsizes.push_back(opts.at(names[i]).stepsize);
 		limits_low.push_back(opts.at(names[i]).limit_low);
 		limits_high.push_back(opts.at(names[i]).limit_high);	

@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include <sstream>
 #include <unordered_map>
+#include <math.h>
+#include <bits/stdc++.h>
 
 #include "../neutrino_input.h"
 
@@ -26,6 +28,9 @@
 #include <TFitResultPtr.h>
 #include <TFitResult.h>
 #include <TCanvas.h>
+#include <TGaxis.h>
+#include <TMultiGraph.h>
+#include <TImage.h>
 #include "Math/Interpolator.h"
 #include "Math/IFunctionfwd.h"
 #include "Math/IParamFunctionfwd.h"
@@ -58,7 +63,7 @@ namespace NuFit
 	class interpolated_sys
 	{
 		public:
-			interpolated_sys(std::string parameter_name, std::string analysis_name, std::string nu_flavor, std::vector<double> bins_x, std::vector<double> bins_y, std::vector<double> bins_z);	
+			interpolated_sys(std::string parameter_name, std::string analysis_name, std::string nu_flavor, std::vector<double> bins_x, std::vector<double> bins_y, std::vector<double> bins_z, bool has_interpolated_error=true);	
 			void add_simulated_point(double value, std::string infile, bool is_baseline=false); // be sure to add points in ascending order!
 			void create_correction_functions(bool use_interpolation=false);
 			//void create_correction_functions();
@@ -89,6 +94,7 @@ namespace NuFit
 			std::string flavor;
 
 			bool verbose;
+            bool has_interpolated_error;
             TF1 return_zero;
 
 	};

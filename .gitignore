@@ -1,5 +1,6 @@
 gmon.out
 *.txt
+*.exe
 /input*
 /output*
 /plot

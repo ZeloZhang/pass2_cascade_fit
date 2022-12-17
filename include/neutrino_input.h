@@ -31,7 +31,9 @@ namespace NuFit
 		public: 
 			neutrino_input(std::string name, std::vector<double> &bins_x, std::vector<double> &bins_y, std::vector<double> &bins_z);
 			TH3D conv; // histogram of observables. changes during fitting.
+			TH3D conv_orig;
 			TH3D prompt; // histogram of observables. changes during fitting.
+			TH3D prompt_orig;
 			TH3D astro; // histogram of observables. changes during fitting.
 			TH3D sigma; // histogram of observables. changes during fitting.
 			TH3D conv_efficiency_correction;

@@ -91,6 +91,18 @@ namespace NuFit
 			double prior_domeff_mean_default;
 			double prior_domeff_sigma;
 
+			double prior_hip0_mean_current;
+			double prior_hip0_mean_default;
+			double prior_hip0_sigma;
+
+			double prior_hip1_mean_current;
+			double prior_hip1_mean_default;
+			double prior_hip1_sigma;
+
+			double prior_hadronicinteraction_mean_current;
+			double prior_hadronicinteraction_mean_default;
+			double prior_hadronicinteraction_sigma;
+
 			double prior_deltacr_mean_current;
 			double prior_deltacr_mean_default;
 			double prior_deltacr_sigma;

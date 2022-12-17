@@ -18,17 +18,17 @@ NuFit::interpolated_par_hadronicinteraction::interpolated_par_hadronicinteractio
         std::vector<double> binsy = map_analyses.at(cascade)->get_binsy();
         std::vector<double> binsz = map_analyses.at(cascade)->get_binsz();
 
-        NuFit::interpolated_sys *nue_hadronicinteraction_cascade = new interpolated_sys(par_name, cascade, "NuE", binsx, binsy, binsz);
+        NuFit::interpolated_sys *nue_hadronicinteraction_cascade = new interpolated_sys(par_name, cascade, "NuE", binsx, binsy, binsz,false);
         nue_hadronicinteraction_cascade -> add_simulated_point(0.0, baselinedir + std::string("nue_cascade.txt"), true); // this is baseline hist
         nue_hadronicinteraction_cascade -> add_simulated_point(1.0, dir + std::string("DPMJET/nue_cascade.txt"));
         nue_hadronicinteraction_cascade -> create_correction_functions();
 
-        NuFit::interpolated_sys *numu_hadronicinteraction_cascade = new interpolated_sys(par_name, cascade, "NuMu", binsx, binsy, binsz); 
+        NuFit::interpolated_sys *numu_hadronicinteraction_cascade = new interpolated_sys(par_name, cascade, "NuMu", binsx, binsy, binsz,false); 
         numu_hadronicinteraction_cascade -> add_simulated_point(0.0, baselinedir + std::string("numu_cascade.txt"), true); // this is baseline hist
         numu_hadronicinteraction_cascade -> add_simulated_point(1.0, dir + std::string("DPMJET/numu_cascade.txt"));
         numu_hadronicinteraction_cascade -> create_correction_functions();
 
-        NuFit::interpolated_sys *nutau_hadronicinteraction_cascade = new interpolated_sys(par_name, cascade, "NuTau", binsx, binsy, binsz);
+        NuFit::interpolated_sys *nutau_hadronicinteraction_cascade = new interpolated_sys(par_name, cascade, "NuTau", binsx, binsy, binsz,false);
         nutau_hadronicinteraction_cascade -> add_simulated_point(0.0, baselinedir + std::string("nutau_cascade.txt"), true); // this is baseline hist
         nutau_hadronicinteraction_cascade -> add_simulated_point(1.0, dir + std::string("DPMJET/nutau_cascade.txt"));
         nutau_hadronicinteraction_cascade -> create_correction_functions();
@@ -51,17 +51,17 @@ NuFit::interpolated_par_hadronicinteraction::interpolated_par_hadronicinteractio
         std::vector<double> binsy = map_analyses.at(muon)->get_binsy();
         std::vector<double> binsz = map_analyses.at(muon)->get_binsz();
 
-        NuFit::interpolated_sys *nue_hadronicinteraction_muon = new interpolated_sys(par_name, muon, "NuE", binsx, binsy, binsz);
+        NuFit::interpolated_sys *nue_hadronicinteraction_muon = new interpolated_sys(par_name, muon, "NuE", binsx, binsy, binsz, false);
         nue_hadronicinteraction_muon -> add_simulated_point(0.0, baselinedir_muon + std::string("nue_muon.txt"), true); // this is baseline hist
         nue_hadronicinteraction_muon -> add_simulated_point(1.0, dir_muon + std::string("DPMJET/nue_muon.txt"));
         nue_hadronicinteraction_muon -> create_correction_functions();
 
-        NuFit::interpolated_sys *numu_hadronicinteraction_muon = new interpolated_sys(par_name, muon, "NuMu", binsx, binsy, binsz); 
+        NuFit::interpolated_sys *numu_hadronicinteraction_muon = new interpolated_sys(par_name, muon, "NuMu", binsx, binsy, binsz, false); 
         numu_hadronicinteraction_muon -> add_simulated_point(0.0, baselinedir_muon + std::string("numu_muon.txt"), true); // this is baseline hist
         numu_hadronicinteraction_muon -> add_simulated_point(1.0, dir_muon + std::string("DPMJET/numu_muon.txt"));
         numu_hadronicinteraction_muon -> create_correction_functions();
 
-        NuFit::interpolated_sys *nutau_hadronicinteraction_muon = new interpolated_sys(par_name, muon, "NuTau", binsx, binsy, binsz);
+        NuFit::interpolated_sys *nutau_hadronicinteraction_muon = new interpolated_sys(par_name, muon, "NuTau", binsx, binsy, binsz, false);
         nutau_hadronicinteraction_muon -> add_simulated_point(0.0, baselinedir_muon + std::string("nutau_muon.txt"), true); // this is baseline hist
         nutau_hadronicinteraction_muon -> add_simulated_point(1.0, dir_muon + std::string("DPMJET/nutau_muon.txt"));
         nutau_hadronicinteraction_muon -> create_correction_functions();
@@ -84,17 +84,17 @@ NuFit::interpolated_par_hadronicinteraction::interpolated_par_hadronicinteractio
         std::vector<double> binsy = map_analyses.at(hybrid)->get_binsy();
         std::vector<double> binsz = map_analyses.at(hybrid)->get_binsz();    
 
-        NuFit::interpolated_sys *nue_hadronicinteraction_hybrid = new interpolated_sys(par_name, hybrid, "NuE", binsx, binsy, binsz);
+        NuFit::interpolated_sys *nue_hadronicinteraction_hybrid = new interpolated_sys(par_name, hybrid, "NuE", binsx, binsy, binsz, false);
         nue_hadronicinteraction_hybrid -> add_simulated_point(0.0, baselinedir + std::string("nue_hybrid.txt"), true); // this is baseline hist
         nue_hadronicinteraction_hybrid -> add_simulated_point(1.0, dir + std::string("DPMJET/nue_hybrid.txt"));
         nue_hadronicinteraction_hybrid -> create_correction_functions();
 
-        NuFit::interpolated_sys *numu_hadronicinteraction_hybrid = new interpolated_sys(par_name, hybrid, "NuMu", binsx, binsy, binsz); 
+        NuFit::interpolated_sys *numu_hadronicinteraction_hybrid = new interpolated_sys(par_name, hybrid, "NuMu", binsx, binsy, binsz, false); 
         numu_hadronicinteraction_hybrid -> add_simulated_point(0.0, baselinedir + std::string("numu_hybrid.txt"), true); // this is baseline hist
         numu_hadronicinteraction_hybrid -> add_simulated_point(1.0, dir + std::string("DPMJET/numu_hybrid.txt"));
         numu_hadronicinteraction_hybrid -> create_correction_functions();
 
-        NuFit::interpolated_sys *nutau_hadronicinteraction_hybrid = new interpolated_sys(par_name, hybrid, "NuTau", binsx, binsy, binsz);
+        NuFit::interpolated_sys *nutau_hadronicinteraction_hybrid = new interpolated_sys(par_name, hybrid, "NuTau", binsx, binsy, binsz, false);
         nutau_hadronicinteraction_hybrid -> add_simulated_point(0.0, baselinedir + std::string("nutau_hybrid.txt"), true); // this is baseline hist
         nutau_hadronicinteraction_hybrid -> add_simulated_point(1.0, dir + std::string("DPMJET/nutau_hybrid.txt"));
         nutau_hadronicinteraction_hybrid -> create_correction_functions();
